@@ -1,0 +1,57 @@
+<!-- app/templates/admin/edit_user.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Editar Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h5 class="mb-4">Editar Usuario</h5>
+
+    <div class="card shadow-sm p-4" style="width: 100%; max-width: 360px;">
+        <form method="POST" class="needs-validation" novalidate>
+
+            <!-- ✅ Campo oculto para el token CSRF -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+                <label for="username" class="form-label">*</label>
+                <label for="username" class="form-label">Nombre de usuario</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                <div class="invalid-feedback">Por favor, ingresa un nombre de usuario.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="username" class="form-label">*</label>
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                <div class="invalid-feedback">Por favor, ingresa un correo válido.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña (opcional)</label>
+                <input type="password" class="form-control" id="password" name="password">
+                <div class="form-text">Deja este campo vacío si no deseas cambiar la contraseña.</div>
+            </div>
+
+            <div class="form-check mb-2">
+                <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin" {% if user.is_admin %}checked{% endif %}>
+                <label class="form-check-label" for="is_admin">¿Administrador?</label>
+            </div>
+
+            <div class="form-check mb-4">
+                <input type="checkbox" class="form-check-input" id="is_verified" name="is_verified" {% if user.is_verified %}checked{% endif %}>
+                <label class="form-check-label" for="is_verified">¿Verificado?</label>
+            </div>
+
+            <div class="mt-5" style="display: flex;width: 100%;align-content: center; justify-content: center">
+                <button type="submit" class="btn btn-success" style="font-size: 14px">
+                    Guardar cambios
+                </button>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary ms-3" style="font-size: 14px">
+                    Volver al Dashboard
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

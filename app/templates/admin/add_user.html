@@ -1,0 +1,62 @@
+<!-- app/templates/admin/add_user.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Crear Usuario{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h5 class="mb-4">Agregar Nuevo Usuario</h5>
+
+    <div class="card shadow-sm p-4" style="width: 100%; max-width: 340px;">
+        <form method="POST" class="needs-validation" novalidate>
+
+            <!-- ✅ Campo oculto para el token CSRF -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+                <label for="username" class="form-label">*</label>
+                <label for="username" class="form-label">Nombre de usuario</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+                <div class="invalid-feedback">Por favor, ingresa un nombre de usuario.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="username" class="form-label">*</label>
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+                <div class="invalid-feedback">Por favor, ingresa un correo válido.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="username" class="form-label">*</label>
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+                <div class="invalid-feedback">Por favor, ingresa una contraseña.</div>
+            </div>
+
+            <div class="form-check mb-2">
+                <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin">
+                <label class="form-check-label" for="is_admin">¿Administrador?</label>
+            </div>
+
+            <div class="form-check mb-4">
+                <input type="hidden" name="is_verified" value="off">
+                <input type="checkbox" class="form-check-input" id="is_verified" name="is_verified">
+                <label class="form-check-label" for="is_verified">¿Verificado?</label>
+            </div>
+
+            <div class="mt-5" style="display: flex;width: 100%;align-content: center; justify-content: center">
+                <button type="submit" class="btn btn-primary"
+                    style="font-size: 14px">
+                    Crear usuario
+                </button>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary ms-3"
+                    style="font-size: 14px">
+                    Volver al Dashboard
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

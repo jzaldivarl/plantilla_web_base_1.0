@@ -1,0 +1,62 @@
+<!-- app/templates/register.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Regístrate{% endblock %}
+
+{% block content %}
+
+<style>
+    /* CSS específico para este formulario */
+    .register-form .invalid-feedback {
+        display: none;
+        color: #dc3545;
+        font-size: 0.9em;
+    }
+
+    .register-form input:invalid + .invalid-feedback {
+        display: block;
+    }
+
+    .register-form input:invalid {
+        border-color: #dc3545;
+    }
+
+    .register-form input:valid {
+        border-color: #28a745;
+    }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="height: 80vh;" >
+    <div class="card shadow-sm p-4" style="width: 100%; max-width: 350px;">
+        <h4 class="text-center">Regístrate</h4>
+
+        <!-- Formulario de Registro -->
+        <form method="POST" class="register-form" novalidate action="{{ url_for('register.register_view') }}" >
+
+            <!-- ✅ Campo oculto para el token CSRF -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-2">
+                <label for="username">*usuario</label>
+                <input type="text" class="form-control" id="username" name="username" minlength="5" required>
+                <small class="text-muted">El nombre de usuario debe tener al menos 5 caracteres.</small>
+            </div>
+            <div class="mb-2">
+                <label for="email">*correo electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+                <small class="text-muted">Tu e-mail debe tener un formato válido ejemplo: "usuario123@gmail.com".</small>
+            </div>
+            <div class="mb-2">
+                <label for="password">*contraseña</label>
+                <input type="password" class="form-control" id="password" name="password"
+                       minlength="8" pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required>
+                <small class="text-muted">La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula, un número y un carácter especial.</small>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Registrarse</button>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

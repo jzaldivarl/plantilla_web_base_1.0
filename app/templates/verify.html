@@ -1,0 +1,102 @@
+<!-- app/templates/verify.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Verificación de Cuenta{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
+        <div class="text-center mb-4">
+            <h2 class="h4">Verifica tu cuenta</h2>
+            <p class="text-muted">Introduce el código de verificación que enviamos a tu correo electrónico.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('verify.verify_view') }}">
+
+            <!-- ✅ Campo oculto para el token CSRF -->
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+                <label for="code" class="form-label">Código de verificación</label>
+                <input
+                    type="text"
+                    id="code"
+                    name="code"
+                    class="form-control"
+                    placeholder="Ingresa el código de 6 dígitos"
+                    required
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    inputmode="numeric"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Verificar</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <p class="text-muted">
+                ¿No recibiste el código? <button id="resendButton" class="btn btn-link" style="display:none;">Reenviar código</button>
+            </p>
+        </div>
+
+        <!-- Temporizador -->
+        <div id="timer" class="text-center text-muted mt-2"></div>
+    </div>
+</div>
+
+<script>
+    // Temporizador de 60 segundos
+    let timer = 60;
+    const resendButton = document.getElementById('resendButton');
+    const timerElement = document.getElementById('timer');
+
+    // Función para actualizar el temporizador
+    function updateTimer() {
+        if (timer > 0) {
+            timer--;
+            timerElement.textContent = `Puedes reenviar el código en ${timer} segundos.`;
+        } else {
+            resendButton.style.display = 'inline';
+            timerElement.textContent = '';
+            clearInterval(timerInterval);
+        }
+    }
+
+    // Iniciar el temporizador al cargar la página
+    const timerInterval = setInterval(updateTimer, 1000);
+
+    // Lógica para reenviar el código
+    resendButton.addEventListener('click', () => {
+        fetch("{{ url_for('verify.resend_code') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Código reenviado exitosamente. Revisa tu correo electrónico.');
+
+                // Ocultar el botón y reiniciar el temporizador
+                resendButton.style.display = 'none';
+                timer = 60;
+                timerElement.textContent = `Puedes reenviar el código en ${timer} segundos.`;
+                clearInterval(timerInterval);
+                setInterval(updateTimer, 1000);
+            } else if (data.redirect) {
+                alert(data.message);
+                window.location.href = data.redirect;
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Hubo un problema al reenviar el código. Intenta nuevamente.');
+        });
+    });
+</script>
+
+{% endblock %}

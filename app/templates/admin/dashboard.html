@@ -1,0 +1,72 @@
+<!-- app/templates/admin/dashboard.html -->
+
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard de Administración
+{% endblock %}
+
+{% block content %}
+<h5>Dashboard de Administración</h5>
+<div class="bg-light">
+    <div class="container mt-5">
+        <h5>Usuarios</h5>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Admin</th>
+                    <th>Verificado</th>
+                    <th>Código de Verificación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ 'Sí' if user.is_admin else 'No' }}</td>
+                    <td>{{ 'Sí' if user.is_verified else 'No' }}</td>
+                    <td>{{ user.verification_code }}</td>
+                    <td>
+                        <!-- Botón para editar usuario -->
+                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}"
+                            class="btn btn-warning btn-sm" style="margin-bottom: 5px; margin-top: 5px;"
+                            >Editar
+                        </a>
+
+                        <!-- Formulario para eliminar usuario -->
+                        <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+
+                            <!-- ✅ Campo oculto para el token CSRF -->
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Botón para agregar un nuevo usuario -->
+    <a class="btn btn-primary mt-3" href="{{ url_for('admin.add_user') }}"
+        style="font-size: 14px;">
+        Nuevo Usuario
+    </a>
+
+    <!-- Botón para regresar a la página principal -->
+    <div style="display: flex; justify-content: center; margin-top: 20px;">
+        <a class="btn btn-secondary" href="{{ url_for('home.home') }}"
+            style="font-size: 14px;">
+            Volver a Home
+        </a>
+    </div>
+</div>
+{% endblock %}
