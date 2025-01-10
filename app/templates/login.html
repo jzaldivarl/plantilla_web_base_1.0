@@ -5,29 +5,28 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<div class="container d-flex justify-content-center align-items-center" style="height: 80vh;">
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card shadow-sm p-4" style="width: 100%; max-width: 350px;">
+
         <h4 class="text-center">Iniciar Sesión</h4>
 
-        <!--fromulario login-->
-        <form method="POST" action="{{ url_for('login.login_view') }}">
-
+        <!--Formulario de login-->
+        <form method="POST" class="register-form"  action="{{ url_for('login.login_view') }}">
             <!-- ✅ Campo oculto para el token CSRF -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <div class="mb-3">
+            <div class="mb-1">
                 <label for="username" class="form-label">usuario</label>
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
+            <div class="mb-1">
+                <label for="email" class="form-label">correo electrónico</label>
                 <input type="email" class="form-control" id="email" name="email" required>
             </div>
-            <div class="mb-3">
+            <div class="mb-1">
                 <label for="password" class="form-label">contraseña</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary" style="font-size: 14px">Iniciar Sesión</button>
-
+            <button type="submit" class="btn btn-primary mt-4" style="font-size: 14px">Iniciar Sesión</button>
         </form>
 
     </div>
