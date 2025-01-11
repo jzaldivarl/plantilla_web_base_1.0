@@ -5,52 +5,61 @@
 {% block title %}Crear Usuario{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-    <h5 class="mb-4">Agregar Nuevo Usuario</h5>
+<div class="container mt-5 d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card shadow-sm p-4" style="width: 100%; max-width: 350px;">
 
-    <div class="card shadow-sm p-4" style="width: 100%; max-width: 340px;">
+        <h4 class="text-center mb-4 ">Nuevo Usuario</h4>
+
+        <!-- Formulario para adicionar usuarios -->
         <form method="POST" class="needs-validation" novalidate>
-
             <!-- ✅ Campo oculto para el token CSRF -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <div class="mb-3">
-                <label for="username" class="form-label">*</label>
-                <label for="username" class="form-label">Nombre de usuario</label>
+            <div class="mb-1">
+                <label for="username" class="form-label">*usuario</label>
                 <input type="text" class="form-control" id="username" name="username" required>
+                <small class="text-muted">El nombre de usuario debe tener al menos 5 caracteres.
+                    (opcional para administradores)
+                </small>
                 <div class="invalid-feedback">Por favor, ingresa un nombre de usuario.</div>
             </div>
 
-            <div class="mb-3">
-                <label for="username" class="form-label">*</label>
-                <label for="email" class="form-label">Correo electrónico</label>
+            <div class="mb-1">
+                <label for="email" class="form-label">*correo electrónico</label>
                 <input type="email" class="form-control" id="email" name="email" required>
+                <small class="text-muted">El e-mail debe tener un formato válido ejemplo: "usuario123@gmail.com".
+                    (opcional para administradores)
+                </small>
                 <div class="invalid-feedback">Por favor, ingresa un correo válido.</div>
             </div>
 
             <div class="mb-3">
-                <label for="username" class="form-label">*</label>
-                <label for="password" class="form-label">Contraseña</label>
+                <label for="password" class="form-label">*contraseña</label>
                 <input type="password" class="form-control" id="password" name="password" required>
+                <small class="text-muted">La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula,
+                    un número y un caracter especial.(opcional para administradores)
+                </small>
                 <div class="invalid-feedback">Por favor, ingresa una contraseña.</div>
             </div>
 
-            <div class="form-check mb-2">
+            <div class="form-check mb-1">
                 <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin">
-                <label class="form-check-label" for="is_admin">¿Administrador?</label>
+                <label class="form-check-label" for="is_admin">¿administrador?</label>
             </div>
 
-            <div class="form-check mb-4">
+            <div class="form-check mb-1">
                 <input type="hidden" name="is_verified" value="off">
                 <input type="checkbox" class="form-check-input" id="is_verified" name="is_verified">
-                <label class="form-check-label" for="is_verified">¿Verificado?</label>
+                <label class="form-check-label" for="is_verified">¿verificado?</label>
             </div>
 
             <div class="mt-5" style="display: flex;width: 100%;align-content: center; justify-content: center">
-                <button type="submit" class="btn btn-primary"
-                    style="font-size: 14px">
-                    Crear usuario
+                <button type="submit"
+                        class="btn btn-primary"
+                        style="font-size: 14px">
+                        Crear usuario
                 </button>
-                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary ms-3"
+                <a href="{{ url_for('admin.dashboard') }}"
+                    class="btn btn-secondary ms-3"
                     style="font-size: 14px">
                     Volver al Dashboard
                 </a>

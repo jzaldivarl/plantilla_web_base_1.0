@@ -43,15 +43,21 @@
             <div class="mb-1">
                 <label for="email">*correo electrónico</label>
                 <input type="email" class="form-control" id="email" name="email" required>
-                <small class="text-muted">Tu e-mail debe tener un formato válido ejemplo: "usuario123@gmail.com".</small>
+                <small class="text-muted">El e-mail debe tener un formato válido ejemplo: "usuario123@gmail.com".</small>
             </div>
             <div class="mb-1">
                 <label for="password">*contraseña</label>
                 <input type="password" class="form-control" id="password" name="password"
                        minlength="8" pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required>
-                <small class="text-muted">La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula, un número y un carácter especial.</small>
+                <small class="text-muted">La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula,
+                                          un número y un caracter especial.
+                </small>
             </div>
-            <button type="submit" class="btn btn-primary mt-4" style="font-size: 14px">Registrarse</button>
+            <button type="submit"
+                    class="btn btn-primary mt-4"
+                    style="font-size: 14px">
+                    Registrarse
+            </button>
         </form>
 
     </div>
