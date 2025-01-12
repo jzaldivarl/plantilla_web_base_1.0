@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %}Home{% endblock %}</title>
 
     <!-- Bootstrap CSS -->
@@ -14,8 +15,54 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-    <!-- Estilo para el fade-out de los mensajes flash -->
     <style>
+        /* Estilo para la barra de navegación fija */
+        .navbar-fixed {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          z-index: 1030; /* Por encima del contenido */
+        }
+
+        /* Agrega margen al contenido para evitar que se superponga con la barra de navegación fija */
+        body {
+          padding-top: 70px;
+        }
+
+
+        /* ✅ Mensajes flash como banners finos */
+        .flash-banner {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+        color: white;
+        z-index: 1050;
+        }
+
+        .flash-banner.alert-success {
+        background-color: #28a745;
+        }
+
+        .flash-banner.alert-danger {
+        background-color: #dc3545;
+        }
+
+        .flash-banner.alert-warning {
+        background-color: #ffc107;
+        color: #212529;
+        }
+
+        .flash-banner.alert-info {
+        background-color: #17a2b8;
+        }
+
+        /* Efecto de desvanecimiento */
         .fade-out {
         opacity: 0;
         transition: opacity 1s ease-out;
@@ -26,7 +73,7 @@
 <body class="d-flex flex-column min-vh-100" >
 
     <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg bg-light shadow">
+    <nav class="navbar navbar-expand-lg bg-light shadow navbar-fixed">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('home.home') }}">
                 Mi Web
@@ -73,18 +120,16 @@
     <!-- Contenedor para los mensajes flash -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-          <div class="container mt-3">
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            <div class="flash-banner alert-{{ category }} alert-dismissible fade show" role="alert">
                 {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
+                <!--<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
+            </div>
             {% endfor %}
-          </div>
         {% endif %}
     {% endwith %}
 
-    <!-- Contenido específico de cada página -->
+    <!-- Sección para insertar el contenido de cada página -->
     <main class="container mt-5  flex-grow-1">
         {% block content %}
         {% endblock %}
@@ -98,7 +143,7 @@
     <!-- Script para desaparecer los mensajes flash después de 5 segundos -->
     <script>
         setTimeout(() => {
-        const alerts = document.querySelectorAll('.alert');
+        const alerts = document.querySelectorAll('.flash-banner');
         alerts.forEach(alert => {
             alert.classList.add('fade-out');
             // Opcional: eliminar completamente el elemento después de la transición

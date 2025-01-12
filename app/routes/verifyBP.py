@@ -1,6 +1,6 @@
 # app/routes/verifyBP.py
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from app import db
 from app.models import User
 import random
@@ -58,22 +58,29 @@ def verify_view():
 
     return render_template('verify.html')
 
-# ✅ Ruta para reenviar el código de verificación
-@verifyBp.route('/resend_code', methods=['GET'])
+
+# ✅ Ruta para reenviar el código de verificación (compatible con AJAX)
+@verifyBp.route('/resend_code', methods=['POST'])
 @require_verification
 def resend_code():
+
+    # Capturar el usuario pendiente de verificación en la sesión
     pending_user = session.get('pending_user')
 
+    # Verificar si existe el usuario pendiente
     if not pending_user or 'email' not in pending_user:
-        flash('No se encontró la solicitud de verificación. Por favor, regístrate nuevamente.', 'danger')
-        return redirect(url_for('register.register_view'))
+        return jsonify({'message': 'No se encontró la solicitud de verificación. Por favor, regístrate nuevamente.', 'category': 'danger', 'redirect': url_for('register.register_view')})
 
     # ✅ Limitar los intentos de reenvío
     attempts = session.get('resend_attempts', 0)
     if attempts >= 3:
         session.clear()
-        flash('Has alcanzado el límite de reenvíos. Por favor, regístrate nuevamente.', 'danger')
-        return redirect(url_for('register.register_view'))
+        return jsonify({
+            'message': 'Has alcanzado el número máximo de reenvíos. Redirigiendo al registro...',
+            'category': 'danger',
+            'redirect': url_for('register.register_view'),
+            'delay': 3000  # ✅ Esperar 3 segundos antes de redirigir
+        })
 
     # ✅ Incrementar los intentos
     session['resend_attempts'] = attempts + 1
@@ -85,8 +92,8 @@ def resend_code():
 
     try:
         send_verification_email(pending_user['email'], new_code)
-        flash('El código de verificación ha sido reenviado. Revisa tu correo electrónico.', 'info')
-    except Exception as e:
-        flash(f'Error al enviar el correo: {str(e)}', 'danger')
+        return jsonify({'message': 'El código de verificación ha sido reenviado. Revisa tu correo electrónico.', 'category': 'info'}), 200
 
-    return redirect(url_for('verify.verify_view'))
+    except Exception as e:
+        return jsonify({'message': f'Error al enviar el correo: {str(e)}', 'category': 'danger'}), 500
+

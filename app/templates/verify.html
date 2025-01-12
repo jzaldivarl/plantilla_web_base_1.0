@@ -5,19 +5,6 @@
 {% block title %}Verificación de Cuenta{% endblock %}
 
 {% block content %}
-<!-- ✅ Mensajes flash de Flask -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="alert-container mb-3">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-{% endwith %}
 
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
@@ -25,8 +12,10 @@
             <h2 class="h4">Verifica tu cuenta</h2>
             <p class="text-muted">Introduce el código de verificación que enviamos a tu correo electrónico.</p>
         </div>
+
         <!-- Formulario de verificación -->
         <form method="POST" action="{{ url_for('verify.verify_view') }}">
+            <!-- ✅ Campo oculto para el token CSRF -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="mb-3">
                 <label for="code" class="form-label">Código de verificación</label>
@@ -44,36 +33,107 @@
             </div>
             <button type="submit" class="btn btn-primary w-100">Verificar</button>
         </form>
-        <div class="text-center mt-3">
-            <p class="text-muted">
-                ¿No recibiste el código? <button id="resendButton" class="btn btn-link" style="display:none;">Reenviar código</button>
-            </p>
-        </div>
-        <!-- Temporizador -->
-        <div id="timer" class="text-center text-muted mt-2"></div>
+
+        <!-- Botón para reenviar código (oculto por defecto) -->
+        <button id="resendButton" class="btn btn-link mt-3 d-none">Reenviar código</button>
+
+        <!-- Temporizador visible -->
+        <p id="timer" class="mt-3 text-muted">Intenta nuevamente en <span id="timeLeft">60</span> segundos.</p>
+
+        <!-- Contenedor de mensajes -->
+        <div id="messageContainer" class="mt-3"></div>
+
     </div>
 </div>
 
-<!-- código js para el temporizador de reenvio -->
+<!-- código js para manejar los mensajes y el botón de progreso  (AJAX) -->
 <script>
-    // Temporizador de 60 segundos
-    let timer = 60;
+    // Seleccionar elementos
     const resendButton = document.getElementById('resendButton');
-    const timerElement = document.getElementById('timer');
+    const messageContainer = document.getElementById('messageContainer');
+    const timer = document.getElementById('timer');
+    const timeLeft = document.getElementById('timeLeft');
 
-    // Función para actualizar el temporizador
-    function updateTimer() {
-        if (timer > 0) {
-            timer--;
-            timerElement.textContent = `Puedes reenviar el código en ${timer} segundos.`;
-        } else {
-            resendButton.style.display = 'inline';
-            timerElement.textContent = '';
-            clearInterval(timerInterval);
-        }
+    // Función para iniciar el temporizador
+    let countdown;
+    let timerInterval;
+
+    function startTimer(seconds) {
+        clearInterval(timerInterval);
+        countdown = seconds;
+        timer.classList.remove('d-none');  // Mostrar el temporizador
+        resendButton.classList.add('d-none');  // Ocultar el botón
+
+        timerInterval = setInterval(() => {
+            countdown--;
+            timeLeft.textContent = countdown;
+
+            if (countdown <= 0) {
+                clearInterval(timerInterval);
+                timer.classList.add('d-none');  // Ocultar el temporizador
+                resendButton.classList.remove('d-none');  // Mostrar el botón
+            }
+        }, 1000);
     }
 
     // Iniciar el temporizador al cargar la página
-    const timerInterval = setInterval(updateTimer, 1000);
+    startTimer(60);
+
+    // Evento para el botón "Reenviar código"
+    resendButton.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        // Mostrar spinner y desactivar el botón
+        resendButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Reenviando...';
+        resendButton.disabled = true;
+
+        // Realizar solicitud AJAX
+        fetch("{{ url_for('verify.resend_code') }}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            // Mostrar mensaje dinámico
+            showMessage(data.message, data.category);
+
+            if (data.redirect) {
+                // ✅ Esperar unos segundos antes de redirigir
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, data.delay || 3000);
+                return;
+            }
+
+            // Reiniciar el temporizador
+            startTimer(60);
+
+            // Restaurar el botón después de 3 segundos
+            setTimeout(() => {
+                resendButton.innerHTML = 'Reenviar código';
+                resendButton.disabled = false;
+            }, 3000);
+        })
+        .catch(error => {
+            // Manejar errores
+            showMessage('Ocurrió un error. Por favor, intenta nuevamente.', 'danger');
+            resendButton.innerHTML = 'Reenviar código';
+            resendButton.disabled = false;
+        });
+    });
+
+    // Función para mostrar mensajes dinámicos
+    function showMessage(message, category) {
+        messageContainer.innerHTML = `
+            <div class="alert alert-${category} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+    }
 </script>
+
 {% endblock %}

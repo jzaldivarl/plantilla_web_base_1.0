@@ -7,7 +7,7 @@ Dashboard de Administración
 {% endblock %}
 
 {% block content %}
-<h5>Dashboard de Administración</h5>
+<h5 class="mt-5" >Dashboard de Administración</h5>
 <div class="bg-light">
     <div class="container mt-5">
         <h5>Usuarios</h5>
@@ -15,11 +15,11 @@ Dashboard de Administración
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th>Username</th>
-                    <th>Email</th>
+                    <th>Usuario</th>
+                    <th>E-mail</th>
                     <th>Admin</th>
                     <th>Verificado</th>
-                    <th>Código de Verificación</th>
+                    <!--<th>Código de Verificación</th>-->
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -30,7 +30,7 @@ Dashboard de Administración
                     <td>{{ user.email }}</td>
                     <td>{{ 'Sí' if user.is_admin else 'No' }}</td>
                     <td>{{ 'Sí' if user.is_verified else 'No' }}</td>
-                    <td>{{ user.verification_code }}</td>
+                    <!--<td>{{ user.verification_code }}</td>-->
                     <td>
                         <!-- Botón para editar usuario -->
                         <a href="{{ url_for('admin.edit_user', user_id=user.id) }}"
