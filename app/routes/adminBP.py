@@ -5,7 +5,9 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash 
 from flask_login import login_required, current_user  # 🔐 Manejo de autenticación
 from app.models import User  # 👤 Modelo de usuario
 from app import db  # 🗄️ Base de datos
-from sqlalchemy.exc import SQLAlchemyError  # ❗ Para manejar errores de la base de datos
+from validate_email_address import validate_email
+from app.routes.registerBP import validate_password
+from sqlalchemy.exc import SQLAlchemyError , IntegrityError # ❗ Para manejar errores de la base de datos
 from functools import wraps  # 🧰 Herramienta para crear decoradores personalizados
 
 # 🧩 1. DEFINICIÓN DEL BLUEPRINT
@@ -30,6 +32,7 @@ def admin_required(f):
 @login_required
 @admin_required
 def dashboard():
+
     # 📝 Obtener el término de búsqueda de los parámetros de la URL
     search_query = request.args.get('search', '')
 
@@ -54,8 +57,8 @@ def dashboard():
 @login_required
 @admin_required
 def add_user():
-    if request.method == 'POST':
 
+    if request.method == 'POST':
         try:
             # 📥 Obtener los datos del formulario
             username = request.form.get('username').strip()
@@ -85,10 +88,22 @@ def add_user():
 
             flash('Usuario creado exitosamente.', 'success')  # 🎉 Mensaje de éxito
 
+        except IntegrityError as e:
+            db.session.rollback()
+            if "username" in str(e.orig):
+                flash('El nombre de usuario ya está en uso. Elige otro.', 'danger')
+            elif "email" in str(e.orig):
+                flash('El correo electrónico ya está registrado. Usa uno diferente.', 'danger')
+            else:
+                flash('Error de integridad de datos. Intenta nuevamente.', 'danger')
+
+            return redirect(url_for('admin.add_user'))
+
         except SQLAlchemyError as e:
             db.session.rollback()  # 🚨 Revertir los cambios si ocurre un error
-            flash('Error al crear el usuario. Intenta nuevamente.', 'danger')
-            print(f"Error: {e}")  # 🛠️ Registrar el error en la consola
+            flash(f'Error: {e} al actualizar el usuario. Intenta nuevamente.', 'danger')
+            print(f"Error: {e}") # 🛠️ Registrar el error en la consola
+            return redirect(url_for('admin.add_user')) # 🛠️ Registrar el error en la consola
 
         # 🔄 Redirigir al dashboard
         return redirect(url_for('admin.dashboard'))
@@ -102,11 +117,10 @@ def add_user():
 @login_required
 @admin_required
 def edit_user(user_id):
+
     # 🔍 Buscar al usuario por su ID o devolver 404
     user = User.query.get_or_404(user_id)
-
     if request.method == 'POST':
-
         try:
             # 📥 Obtener los datos actualizados del formulario
             username = request.form.get('username').strip()
@@ -133,10 +147,22 @@ def edit_user(user_id):
 
             flash('Usuario actualizado exitosamente.', 'success')  # 🎉 Mensaje de éxito
 
+        except IntegrityError as e:
+            db.session.rollback()
+            if "username" in str(e.orig):
+                flash('El nombre de usuario ya está en uso. Elige otro.', 'danger')
+            elif "email" in str(e.orig):
+                flash('El correo electrónico ya está registrado. Usa uno diferente.', 'danger')
+            else:
+                flash('Error de integridad de datos. Intenta nuevamente.', 'danger')
+
+            return redirect(url_for('admin.edit_user', user_id=user_id))
+
         except SQLAlchemyError as e:
             db.session.rollback() # 🚨 Revertir los cambios si ocurre un error
-            flash('Error al actualizar el usuario. Intenta nuevamente.', 'danger')
+            flash(f'Error: {e} al actualizar el usuario. Intenta nuevamente.', 'danger')
             print(f"Error: {e}") # 🛠️ Registrar el error en la consola
+            return redirect(url_for('admin.edit_user', user_id=user_id))
 
         # 🔄 Redirigir al dashboard
         return redirect(url_for('admin.dashboard'))
@@ -160,7 +186,7 @@ def delete_user(user_id):
 
     except SQLAlchemyError as e:
         db.session.rollback()
-        flash('Error al eliminar el usuario. Intenta nuevamente.', 'danger')
+        flash(f'Error: {e} al eliminar el usuario. Intenta nuevamente.', 'danger')
         print(f"Error: {e}")
 
     # 🔄 Redirigir al dashboard
