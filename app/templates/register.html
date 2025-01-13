@@ -5,12 +5,11 @@
 {% block title %}Regístrate{% endblock %}
 
 {% block content %}
-
 <style>
-    /* CSS específico para este formulario */
+    /* ✅ Estilos específicos para el formulario de registro */
     .register-form .invalid-feedback {
         display: none;
-        color: #dc3545;
+        color: #dc3545;  /* Color de error */
         font-size: 0.9em;
     }
 
@@ -19,36 +18,38 @@
     }
 
     .register-form input:invalid {
-        border-color: #dc3545;
+        border-color: #dc3545;  /* Bordes rojos si el campo es inválido */
     }
 
     .register-form input:valid {
-        border-color: #28a745;
+        border-color: #28a745;  /* Bordes verdes si el campo es válido */
     }
 </style>
 
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card shadow-sm p-4" style="width: 100%; max-width: 350px;">
-
         <h4 class="text-center">Regístrate</h4>
 
-        <!-- Formulario de Registro -->
+        <!-- ✅ Formulario de Registro -->
         <form id="registerForm" method="POST" class="register-form" novalidate action="{{ url_for('register.register_view') }}">
-            <!-- ✅ Campo oculto para el token CSRF -->
+            <!-- ✅ Token CSRF para seguridad -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
+            <!-- ✅ Campo de nombre de usuario -->
             <div class="mb-1">
                 <label for="username">*usuario</label>
                 <input type="text" class="form-control" id="username" name="username" minlength="5" required>
                 <small class="text-muted">El nombre de usuario debe tener al menos 5 caracteres.</small>
             </div>
 
+            <!-- ✅ Campo de correo electrónico -->
             <div class="mb-1">
                 <label for="email">*correo electrónico</label>
                 <input type="email" class="form-control" id="email" name="email" required>
-                <small class="text-muted">El e-mail debe tener un formato válido ejemplo: "usuario123@gmail.com".</small>
+                <small class="text-muted">El e-mail debe tener un formato válido, ejemplo: "usuario123@gmail.com".</small>
             </div>
 
+            <!-- ✅ Campo de contraseña -->
             <div class="mb-1">
                 <label for="password">*contraseña</label>
                 <input type="password" class="form-control" id="password" name="password"
@@ -59,6 +60,7 @@
                 </small>
             </div>
 
+            <!-- ✅ Botón de registro -->
             <button type="submit"
                     id="registerButton"
                     class="btn btn-primary mt-4"
@@ -66,28 +68,27 @@
                 Registrarse
             </button>
         </form>
-
     </div>
 </div>
 
+<!-- ✅ Lógica JavaScript -->
 <script>
-    // Selecciona el formulario y el botón de registro
+    // ✅ Selección del formulario y botón de registro
     const registerForm = document.getElementById('registerForm');
     const registerButton = document.getElementById('registerButton');
 
-    // Cuando se envíe el formulario, desactiva el botón y muestra el spinner
+    // ✅ Cuando el formulario se envía, desactiva el botón y muestra el spinner
     registerForm.addEventListener('submit', function (e) {
-        e.preventDefault();  // ✅ Previene el envío inmediato
+        e.preventDefault();  // Evita el envío inmediato
 
-        // ✅ Desactiva el botón y muestra el spinner
+        // ✅ Desactiva el botón y muestra el spinner de carga
         registerButton.disabled = true;
         registerButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registrando...';
 
-        // ✅ Envía el formulario después de un pequeño delay para permitir mostrar el spinner
+        // ✅ Envía el formulario después de un pequeño retraso
         setTimeout(() => {
             registerForm.submit();
         }, 500);
     });
 </script>
-
 {% endblock %}

@@ -3,92 +3,86 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Metadatos básicos -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSRF Token para proteger formularios -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Título dinámico definido por cada página que extienda esta plantilla -->
     <title>{% block title %}Home{% endblock %}</title>
 
-    <!-- Bootstrap CSS -->
+    <!-- CSS de Bootstrap y estilos personalizados -->
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
-
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
     <style>
-        /* Estilo para la barra de navegación fija */
+        /* Estilo para una barra de navegación fija en la parte superior */
         .navbar-fixed {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          z-index: 1030; /* Por encima del contenido */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1030;
         }
 
-        /* Agrega margen al contenido para evitar que se superponga con la barra de navegación fija */
+        /* Ajuste de margen para que el contenido no quede oculto debajo de la barra de navegación */
         body {
-          padding-top: 70px;
+            padding-top: 70px;
         }
 
-
-        /* ✅ Mensajes flash como banners finos */
+        /* Estilos para mensajes flash como banners finos */
         .flash-banner {
-        position: fixed;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        padding: 10px;
-        text-align: center;
-        font-size: 14px;
-        font-weight: bold;
-        color: white;
-        z-index: 1050;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            z-index: 1050;
         }
 
-        .flash-banner.alert-success {
-        background-color: #28a745;
-        }
+        /* Colores específicos según el tipo de mensaje */
+        .flash-banner.alert-success { background-color: #28a745; }
+        .flash-banner.alert-danger { background-color: #dc3545; }
+        .flash-banner.alert-warning { background-color: #ffc107; color: #212529; }
+        .flash-banner.alert-info { background-color: #17a2b8; }
 
-        .flash-banner.alert-danger {
-        background-color: #dc3545;
-        }
-
-        .flash-banner.alert-warning {
-        background-color: #ffc107;
-        color: #212529;
-        }
-
-        .flash-banner.alert-info {
-        background-color: #17a2b8;
-        }
-
-        /* Efecto de desvanecimiento */
+        /* Efecto de desvanecimiento para los mensajes flash */
         .fade-out {
-        opacity: 0;
-        transition: opacity 1s ease-out;
+            opacity: 0;
+            transition: opacity 1s ease-out;
         }
     </style>
-
 </head>
-<body class="d-flex flex-column min-vh-100" >
+<body class="d-flex flex-column min-vh-100">
 
-    <!-- Barra de navegación -->
+    <!-- Barra de navegación fija en la parte superior -->
     <nav class="navbar navbar-expand-lg bg-light shadow navbar-fixed">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('home.home') }}">
-                Mi Web
-            </a>
+            <!-- Logo o nombre del sitio -->
+            <a class="navbar-brand" href="{{ url_for('home.home') }}">Mi Web</a>
+
+            <!-- Botón para dispositivos móviles -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
+            <!-- Menú de navegación -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Enlaces públicos -->
                     <li class="nav-item"><a class="nav-link" href="/home">Bienvenido</a></li>
                     <li class="nav-item"><a class="nav-link" href="/products">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="/services">Servicios</a></li>
                     <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
 
                     {% if current_user.is_authenticated %}
+                        <!-- Si el usuario está autenticado -->
                         <li class="nav-item">
                             <span class="nav-link">
                                 <i class="bi bi-person-circle"></i> {{ current_user.username }}
@@ -100,11 +94,13 @@
                             </a>
                         </li>
                         {% if current_user.is_admin %}
+                            <!-- Enlace adicional para usuarios administradores -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
                             </li>
                         {% endif %}
                     {% else %}
+                        <!-- Si el usuario no está autenticado -->
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('login.login_view') }}">Iniciar Sesión</a>
                         </li>
@@ -117,46 +113,44 @@
         </div>
     </nav>
 
-    <!-- Contenedor para los mensajes flash -->
+    <!-- Contenedor para mostrar mensajes flash -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
             <div class="flash-banner alert-{{ category }} alert-dismissible fade show" role="alert">
                 {{ message }}
-                <!--<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>-->
             </div>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
-    <!-- Sección para insertar el contenido de cada página -->
-    <main class="container mt-5  flex-grow-1">
+    <!-- Contenido dinámico que se insertará desde otras plantillas -->
+    <main class="container mt-5 flex-grow-1">
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- Footer -->
+    <!-- Pie de página -->
     <footer class="bg-light text-center py-2">
-        <p style="font-size: small;" >&copy; {{ current_year }} Mi Sitio Web. Todos los derechos reservados.</p>
+        <p style="font-size: small;">&copy; {{ current_year }} Mi Sitio Web. Todos los derechos reservados.</p>
     </footer>
 
-    <!-- Script para desaparecer los mensajes flash después de 5 segundos -->
+    <!-- Script para hacer desaparecer los mensajes flash después de 5 segundos -->
     <script>
         setTimeout(() => {
-        const alerts = document.querySelectorAll('.flash-banner');
-        alerts.forEach(alert => {
-            alert.classList.add('fade-out');
-            // Opcional: eliminar completamente el elemento después de la transición
-            setTimeout(() => {
-            alert.remove();
-            }, 1000);
-        });
+            const alerts = document.querySelectorAll('.flash-banner');
+            alerts.forEach(alert => {
+                alert.classList.add('fade-out');
+                // Eliminar el elemento después de la transición
+                setTimeout(() => {
+                    alert.remove();
+                }, 1000);
+            });
         }, 5000);
     </script>
 
-    <!-- Bootstrap JS -->
+    <!-- Cargar los scripts de Bootstrap y JavaScript personalizados -->
     <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/forms.js') }}"></script>
 

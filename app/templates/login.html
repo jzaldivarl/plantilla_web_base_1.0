@@ -2,33 +2,38 @@
 
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card shadow-sm p-4" style="width: 100%; max-width: 350px;">
+        <h4 class="text-center mb-4">Iniciar Sesión</h4>
 
-        <h4 class="text-center">Iniciar Sesión</h4>
-
-        <!--Formulario de login-->
-        <form method="POST" class="register-form"  action="{{ url_for('login.login_view') }}">
+        <!-- Formulario de login -->
+        <form method="POST" action="{{ url_for('login.login_view') }}">
             <!-- ✅ Campo oculto para el token CSRF -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <div class="mb-1">
-                <label for="username" class="form-label">usuario</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+
+            <!-- Campo para email -->
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa tu correo" required>
             </div>
-            <div class="mb-1">
-                <label for="email" class="form-label">correo electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+
+            <!-- Campo para contraseña -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa tu contraseña" required>
             </div>
-            <div class="mb-1">
-                <label for="password" class="form-label">contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary mt-4" style="font-size: 14px">Iniciar Sesión</button>
+
+            <!-- Botón de envío -->
+            <button type="submit" class="btn btn-primary w-100 mt-3">Iniciar Sesión</button>
         </form>
 
+        <!-- Link para registrarse -->
+        <div class="text-center mt-3">
+            <p class="small">¿No tienes una cuenta? <a style="text-decoration: none;" href="{{ url_for('register.register_view') }}">Regístrate aquí</a></p>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -5,7 +5,6 @@
 {% block title %}Verificación de Cuenta{% endblock %}
 
 {% block content %}
-
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
         <div class="text-center mb-4">
@@ -15,54 +14,40 @@
 
         <!-- Formulario de verificación -->
         <form method="POST" action="{{ url_for('verify.verify_view') }}">
-            <!-- ✅ Campo oculto para el token CSRF -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="mb-3">
                 <label for="code" class="form-label">Código de verificación</label>
-                <input
-                    type="text"
-                    id="code"
-                    name="code"
-                    class="form-control"
-                    placeholder="Ingresa el código de 6 dígitos"
-                    required
-                    maxlength="6"
-                    pattern="[0-9]{6}"
-                    inputmode="numeric"
-                >
+                <input type="text" id="code" name="code" class="form-control" placeholder="Ingresa el código de 6 dígitos" required maxlength="6" pattern="[0-9]{6}" inputmode="numeric">
             </div>
             <button type="submit" class="btn btn-primary w-100">Verificar</button>
         </form>
 
-        <!-- Botón para reenviar código (oculto por defecto) -->
+        <!-- Botón para reenviar código -->
         <button id="resendButton" class="btn btn-link mt-3 d-none">Reenviar código</button>
 
-        <!-- Temporizador visible -->
+        <!-- Temporizador -->
         <p id="timer" class="mt-3 text-muted">Intenta nuevamente en <span id="timeLeft">60</span> segundos.</p>
 
         <!-- Contenedor de mensajes -->
         <div id="messageContainer" class="mt-3"></div>
-
     </div>
 </div>
 
-<!-- código js para manejar los mensajes y el botón de progreso  (AJAX) -->
+<!-- JavaScript para manejar mensajes dinámicos y reenvío de código -->
 <script>
-    // Seleccionar elementos
     const resendButton = document.getElementById('resendButton');
     const messageContainer = document.getElementById('messageContainer');
     const timer = document.getElementById('timer');
     const timeLeft = document.getElementById('timeLeft');
 
-    // Función para iniciar el temporizador
     let countdown;
     let timerInterval;
 
     function startTimer(seconds) {
         clearInterval(timerInterval);
         countdown = seconds;
-        timer.classList.remove('d-none');  // Mostrar el temporizador
-        resendButton.classList.add('d-none');  // Ocultar el botón
+        timer.classList.remove('d-none');
+        resendButton.classList.add('d-none');
 
         timerInterval = setInterval(() => {
             countdown--;
@@ -70,24 +55,19 @@
 
             if (countdown <= 0) {
                 clearInterval(timerInterval);
-                timer.classList.add('d-none');  // Ocultar el temporizador
-                resendButton.classList.remove('d-none');  // Mostrar el botón
+                timer.classList.add('d-none');
+                resendButton.classList.remove('d-none');
             }
         }, 1000);
     }
 
-    // Iniciar el temporizador al cargar la página
     startTimer(60);
 
-    // Evento para el botón "Reenviar código"
     resendButton.addEventListener('click', function (e) {
         e.preventDefault();
-
-        // Mostrar spinner y desactivar el botón
         resendButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Reenviando...';
         resendButton.disabled = true;
 
-        // Realizar solicitud AJAX
         fetch("{{ url_for('verify.resend_code') }}", {
             method: 'POST',
             headers: {
@@ -96,36 +76,29 @@
         })
         .then(response => response.json())
         .then(data => {
-
-            // Mostrar mensaje dinámico
             showMessage(data.message, data.category);
 
             if (data.redirect) {
-                // ✅ Esperar unos segundos antes de redirigir
                 setTimeout(() => {
                     window.location.href = data.redirect;
                 }, data.delay || 3000);
                 return;
             }
 
-            // Reiniciar el temporizador
             startTimer(60);
 
-            // Restaurar el botón después de 3 segundos
             setTimeout(() => {
                 resendButton.innerHTML = 'Reenviar código';
                 resendButton.disabled = false;
             }, 3000);
         })
         .catch(error => {
-            // Manejar errores
             showMessage('Ocurrió un error. Por favor, intenta nuevamente.', 'danger');
             resendButton.innerHTML = 'Reenviar código';
             resendButton.disabled = false;
         });
     });
 
-    // Función para mostrar mensajes dinámicos
     function showMessage(message, category) {
         messageContainer.innerHTML = `
             <div class="alert alert-${category} alert-dismissible fade show" role="alert">
@@ -133,7 +106,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
+
+        setTimeout(() => {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                alert.classList.remove('show');
+                alert.classList.add('fade');
+                setTimeout(() => alert.remove(), 500);
+            }
+        }, 5000);
     }
 </script>
-
 {% endblock %}
