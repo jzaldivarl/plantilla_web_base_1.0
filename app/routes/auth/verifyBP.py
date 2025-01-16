@@ -1,11 +1,11 @@
-# app/routes/verifyBP.py
+# app/routes/auth/verifyBP.py
 
 # 📦 IMPORTACIÓN DE MÓDULOS
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from datetime import datetime, timezone, timedelta
 from app import db  # 📚 Conexión a la base de datos
 from app.models import User  # 👤 Modelo de usuario
-from app.routes.registerBP import send_verification_email  # 📧 Función para enviar emails de verificación
+from app.routes.auth.registerBP import send_verification_email  # 📧 Función para enviar emails de verificación
 from functools import wraps  # 🛠️ Para crear decoradores personalizados
 import random  # 🎲 Para generar códigos de verificación aleatorios
 
@@ -87,7 +87,7 @@ def verify_view():
         return redirect(url_for('login.login_view'))
 
     # 🖥️ Si el método es GET, muestra la página de verificación.
-    return render_template('verify.html')
+    return render_template('auth/verify.html')
 
 # 🔄 5. RUTA `/verify/resend_code` — Reenvío del código de verificación
 # Permite al usuario reenviar el código de verificación a su email.

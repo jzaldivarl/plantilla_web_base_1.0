@@ -1,4 +1,4 @@
-# app/routes/loginBP.py
+# app/routes/auth/loginBP.py
 
 # 📦 IMPORTACIÓN DE MÓDULOS
 from flask import Blueprint, render_template, request, redirect, url_for, flash  # 🌐 Módulos para rutas y manejo de mensajes flash
@@ -7,16 +7,23 @@ from app.models import User  # 👤 Modelo de usuario para consultas en la base 
 
 # 🧩 1. CREAR EL BLUEPRINT
 # 🔖 El blueprint agrupa las rutas relacionadas con el inicio de sesión y el cierre de sesión.
-loginBp = Blueprint('login', __name__, url_prefix='/login')
+loginBp = Blueprint('login', __name__, url_prefix='/auth/login')
 
-# 🔑 2. RUTA DE INICIO DE SESIÓN (`/login/`)
+# 🔑 2. RUTA DE INICIO DE SESIÓN (`/auth/login`)
 # Esta ruta permite a los usuarios iniciar sesión en la aplicación.
 @loginBp.route('/', methods=['GET', 'POST'])
 def login_view():
-    if request.method == 'POST':  # 🖊️ Si el usuario envía el formulario (método POST)...
+
+    # 🖊️ Si el usuario envía el formulario (método POST) ...
+    if request.method == 'POST':
         # 📥 Obtener los datos del formulario
         email = request.form.get('email').strip()  # ✉️ Email ingresado por el usuario
         password = request.form.get('password').strip()  # 🔒 Contraseña ingresada por el usuario
+
+        # 🚨 2. Validación básica de formato de correo (en backend)
+        if not email or '@' not in email:
+            flash('Correo inválido. Por favor, ingresa un correo válido.', 'danger')
+            return redirect(url_for('login.login_view'))
 
         # 🔎 3. BUSCAR USUARIO EN LA BASE DE DATOS
         # Filtra el usuario por el email ingresado.
@@ -38,7 +45,7 @@ def login_view():
             # 🔀 7. REDIRIGIR SEGÚN EL TIPO DE USUARIO
             # Si es administrador, redirige al panel de administración.
             if user.is_admin:
-                return redirect(url_for('admin.dashboard'))
+                return redirect(url_for('dashboard.dashboard'))
             else:
                 # Si es un usuario normal, redirige a la página de inicio.
                 return redirect(url_for('home.home'))
@@ -49,7 +56,7 @@ def login_view():
             flash('Credenciales incorrectas. Por favor, intenta nuevamente.', 'danger')
 
     # 🖥️ Renderiza el formulario de inicio de sesión (método GET).
-    return render_template('login.html')
+    return render_template('auth/login.html')
 
 # 🚪 9. RUTA PARA CERRAR SESIÓN (`/login/logout`)
 # Esta ruta permite a los usuarios cerrar sesión.

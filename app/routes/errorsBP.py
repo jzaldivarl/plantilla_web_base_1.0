@@ -1,4 +1,5 @@
 # app/routes/errorsBP.py
+
 # 📋 Archivo de rutas para la gestión de errores en la aplicación Flask.
 
 from flask import Blueprint, render_template, redirect, url_for, flash, current_app

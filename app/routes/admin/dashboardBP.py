@@ -1,4 +1,4 @@
-# app/routes/adminBP.py
+# app/routes/admin/dashboardBP.py
 
 # 📦 IMPORTACIÓN DE MÓDULOS
 from flask import Blueprint, render_template, redirect, url_for, request, flash  # 🌐 Manejo de rutas, redirección y mensajes flash
@@ -6,13 +6,13 @@ from flask_login import login_required, current_user  # 🔐 Manejo de autentica
 from app.models import User  # 👤 Modelo de usuario
 from app import db  # 🗄️ Base de datos
 from validate_email_address import validate_email
-from app.routes.registerBP import validate_password
+from app.routes.auth.registerBP import validate_password
 from sqlalchemy.exc import SQLAlchemyError , IntegrityError # ❗ Para manejar errores de la base de datos
 from functools import wraps  # 🧰 Herramienta para crear decoradores personalizados
 
 # 🧩 1. DEFINICIÓN DEL BLUEPRINT
 # Este blueprint agrupa todas las rutas relacionadas con la administración.
-adminBp = Blueprint('admin', __name__, url_prefix='/admin')
+dashboardBp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
 # 🛡️ 2. DECORADOR `admin_required`
 # Este decorador asegura que solo los administradores puedan acceder a las rutas protegidas.
@@ -28,7 +28,7 @@ def admin_required(f):
 
 # 🖥️ 3. RUTA DEL DASHBOARD DE ADMINISTRACIÓN (`/admin/dashboard`)
 # 🔍 Permite buscar y paginar los usuarios registrados.
-@adminBp.route('/dashboard')
+@dashboardBp.route('/dashboard')
 @login_required
 @admin_required
 def dashboard():
@@ -53,7 +53,7 @@ def dashboard():
 
 # ➕ 4. RUTA PARA AGREGAR UN NUEVO USUARIO (`/admin/add_user`)
 # Permite al administrador crear nuevos usuarios.
-@adminBp.route('/add_user', methods=['GET', 'POST'])
+@dashboardBp.route('/add_user', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def add_user():
@@ -70,7 +70,7 @@ def add_user():
             # 🚨 Validación de campos obligatorios
             if not username or not email or not password:
                 flash('Los campos con asteriscos son obligatorios.', 'danger')  # ⚠️ Mensaje de error
-                return redirect(url_for('admin.add_user'))  # 🔄 Redirigir al formulario
+                return redirect(url_for('dashboard.add_user'))  # 🔄 Redirigir al formulario
 
             # 🆕 Crear un nuevo usuario
             new_user = User(
@@ -97,23 +97,23 @@ def add_user():
             else:
                 flash('Error de integridad de datos. Intenta nuevamente.', 'danger')
 
-            return redirect(url_for('admin.add_user'))
+            return redirect(url_for('dashboard.add_user'))
 
         except SQLAlchemyError as e:
             db.session.rollback()  # 🚨 Revertir los cambios si ocurre un error
             flash(f'Error: {e} al actualizar el usuario. Intenta nuevamente.', 'danger')
             print(f"Error: {e}") # 🛠️ Registrar el error en la consola
-            return redirect(url_for('admin.add_user')) # 🛠️ Registrar el error en la consola
+            return redirect(url_for('dashboard.add_user')) # 🛠️ Registrar el error en la consola
 
         # 🔄 Redirigir al dashboard
-        return redirect(url_for('admin.dashboard'))
+        return redirect(url_for('dashboard.dashboard'))
 
     # 📄 Renderizar el formulario para agregar usuario
     return render_template('admin/add_user.html')
 
 # ✏️ 5. RUTA PARA EDITAR UN USUARIO EXISTENTE (`/admin/edit_user/<user_id>`)
 # Permite modificar los datos de un usuario.
-@adminBp.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
+@dashboardBp.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_user(user_id):
@@ -131,7 +131,7 @@ def edit_user(user_id):
             # 🚨 Validación de campos obligatorios
             if not username or not email:
                 flash('Los campos con asteriscos son obligatorios.', 'danger')  # ⚠️ Mensaje de error
-                return redirect(url_for('admin.edit_user', user_id=user_id))  # 🔄 Redirigir al formulario de edición
+                return redirect(url_for('dashboard.edit_user', user_id=user_id))  # 🔄 Redirigir al formulario de edición
 
             # ✏️ Actualizar los datos del usuario
             user.username = username
@@ -156,23 +156,23 @@ def edit_user(user_id):
             else:
                 flash('Error de integridad de datos. Intenta nuevamente.', 'danger')
 
-            return redirect(url_for('admin.edit_user', user_id=user_id))
+            return redirect(url_for('dashboard.edit_user', user_id=user_id))
 
         except SQLAlchemyError as e:
             db.session.rollback() # 🚨 Revertir los cambios si ocurre un error
             flash(f'Error: {e} al actualizar el usuario. Intenta nuevamente.', 'danger')
             print(f"Error: {e}") # 🛠️ Registrar el error en la consola
-            return redirect(url_for('admin.edit_user', user_id=user_id))
+            return redirect(url_for('dashboard.edit_user', user_id=user_id))
 
         # 🔄 Redirigir al dashboard
-        return redirect(url_for('admin.dashboard'))
+        return redirect(url_for('dashboard.dashboard'))
 
     # 📄 Renderizar el formulario de edición
     return render_template('admin/edit_user.html', user=user)
 
 # 🗑️ 6. RUTA PARA ELIMINAR UN USUARIO (`/admin/delete_user/<user_id>`)
 # Permite eliminar un usuario de la base de datos.
-@adminBp.route('/delete_user/<int:user_id>', methods=['POST'])
+@dashboardBp.route('/delete_user/<int:user_id>', methods=['POST'])
 @login_required
 @admin_required
 def delete_user(user_id):
@@ -190,5 +190,5 @@ def delete_user(user_id):
         print(f"Error: {e}")
 
     # 🔄 Redirigir al dashboard
-    return redirect(url_for('admin.dashboard'))
+    return redirect(url_for('dashboard.dashboard'))
 

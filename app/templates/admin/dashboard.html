@@ -12,7 +12,7 @@ Dashboard de Administración
 <div class="container mt-5">
 
     <!-- Formulario de búsqueda -->
-    <form id="search-form" method="GET" action="{{ url_for('admin.dashboard') }}" class="mb-3">
+    <form id="search-form" method="GET" action="{{ url_for('dashboard.dashboard') }}" class="mb-3">
         <div class="input-group">
             <input type="text" id="search-input" class="form-control" placeholder="Buscar por nombre o correo..." name="search" value="{{ search_query }}">
             <button class="btn btn-primary" type="submit">Buscar</button>
@@ -38,11 +38,11 @@ Dashboard de Administración
                 <td>{{ 'Sí' if user.is_admin else 'No' }}</td>
                 <td>{{ 'Sí' if user.is_verified else 'No' }}</td>
                 <td>
-                    <a href="{{ url_for('admin.edit_user', user_id=user.id) }}"
+                    <a href="{{ url_for('dashboard.edit_user', user_id=user.id) }}"
                         class="btn btn-warning btn-sm mb-1 mt-1">
                         Editar
                     </a>
-                    <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                    <form action="{{ url_for('dashboard.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit"
                             class="btn btn-danger btn-sm"
@@ -63,7 +63,7 @@ Dashboard de Administración
             <li class="page-item">
                 <a class="page-link"
                     style="font-size: 14px;"
-                    href="{{ url_for('admin.dashboard', page=users.prev_num, search=search_query) }}">
+                    href="{{ url_for('dashboard.dashboard', page=users.prev_num, search=search_query) }}">
                     anterior
                 </a>
             </li>
@@ -72,7 +72,7 @@ Dashboard de Administración
             <li class="page-item {{ 'active' if page_num == users.page else '' }}">
                 <a class="page-link"
                     style="font-size: 14px;"
-                    href="{{ url_for('admin.dashboard', page=page_num, search=search_query) }}">
+                    href="{{ url_for('dashboard.dashboard', page=page_num, search=search_query) }}">
                     {{ page_num }}
                 </a>
             </li>
@@ -81,7 +81,7 @@ Dashboard de Administración
             <li class="page-item">
                 <a class="page-link"
                     style="font-size: 14px;"
-                    href="{{ url_for('admin.dashboard', page=users.next_num, search=search_query) }}">
+                    href="{{ url_for('dashboard.dashboard', page=users.next_num, search=search_query) }}">
                     siguiente
                 </a>
             </li>
@@ -91,7 +91,7 @@ Dashboard de Administración
 
     <a class="btn btn-primary mt-3"
         style="font-size: 14px;"
-        href="{{ url_for('admin.add_user') }}">
+        href="{{ url_for('dashboard.add_user') }}">
         nuevo usuario
     </a>
 </div>
@@ -101,7 +101,7 @@ Dashboard de Administración
     document.getElementById('search-input').addEventListener('input', function() {
         const searchQuery = this.value;
 
-        fetch(`{{ url_for('admin.dashboard') }}?search=${encodeURIComponent(searchQuery)}`)
+        fetch(`{{ url_for('dashboard.dashboard') }}?search=${encodeURIComponent(searchQuery)}`)
             .then(response => response.text())
             .then(data => {
                 const parser = new DOMParser();

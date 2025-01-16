@@ -42,20 +42,24 @@ def create_app():
     from app.models import User
 
     # 🧩 Importar y registrar los blueprints
-    from app.routes.loginBP import loginBp
-    from app.routes.registerBP import registerBp
-    from app.routes.verifyBP import verifyBp
-    from app.routes.adminBP import adminBp
+    from app.routes.auth.loginBP import loginBp
+    from app.routes.auth.registerBP import registerBp
+    from app.routes.auth.verifyBP import verifyBp
+    from app.routes.auth.recovery_passBP import recovery_passBp
+    from app.routes.admin.dashboardBP import dashboardBp
     from app.routes.homeBP import homeBp
     from app.routes.errorsBP import errorsBp
+
 
     # 📂 Registrar los blueprints en la aplicación
     app.register_blueprint(loginBp)
     app.register_blueprint(registerBp)
     app.register_blueprint(verifyBp)
-    app.register_blueprint(adminBp)
+    app.register_blueprint(recovery_passBp)
+    app.register_blueprint(dashboardBp)
     app.register_blueprint(homeBp)
     app.register_blueprint(errorsBp)
+
 
     # 👤 Cargar el usuario actual desde la sesión
     @login_manager.user_loader

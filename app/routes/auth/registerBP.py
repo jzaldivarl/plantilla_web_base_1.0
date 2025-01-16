@@ -1,4 +1,5 @@
-# app/routes/registerBP.py
+# app/routes/auth/registerBP.py
+
 # 📋 Archivo que define las rutas relacionadas con el registro de usuarios.
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
@@ -11,7 +12,7 @@ from datetime import datetime, timezone
 
 # 🔷 1. Definición del Blueprint para manejar las rutas del registro de usuarios.
 # El prefijo `/register` se agrega automáticamente a todas las rutas definidas en este blueprint.
-registerBp = Blueprint('register', __name__, url_prefix='/register')
+registerBp = Blueprint('register', __name__, url_prefix='/auth/register')
 
 # 🔷 2. Ruta principal para la página de registro.
 # Esta función maneja tanto solicitudes GET como POST.
@@ -23,7 +24,7 @@ def register_view():
         # 🔹 Obtener los datos del formulario.
         username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip()
-        password = request.form.get('password', '')
+        password = request.form.get('password', '').strip()
 
         # 1️⃣ Validar que los campos requeridos no estén vacíos.
         if not username or not email or not password:
@@ -78,7 +79,7 @@ def register_view():
             return redirect(url_for('register.register_view'))
 
     # 🖥️ Si es una solicitud GET, renderizar la página de registro.
-    return render_template('register.html')
+    return render_template('auth/register.html')
 
 # 🔷 3. Función para enviar el correo de verificación al usuario.
 def send_verification_email(email, code):
@@ -101,7 +102,7 @@ def send_verification_email(email, code):
         recipients=[email]
     )
     # 🔹 Cuerpo del mensaje con el código de verificación.
-    msg.html = render_template('verification_email.html', code=code)
+    msg.html = render_template('auth/verification_email.html', code=code)
 
     # 📤 Enviar el correo.
     mail.send(msg)
