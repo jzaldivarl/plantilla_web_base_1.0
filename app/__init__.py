@@ -1,7 +1,7 @@
 # app/__init__.py - Configuración e inicialización de la aplicación Flask
 
 # 🧩 IMPORTACIÓN DE MÓDULOS NECESARIOS
-from flask import Flask, jsonify  # 🌐 Flask para la creación de la aplicación web
+from flask import Flask  # 🌐 Flask para la creación de la aplicación web
 from flask_sqlalchemy import SQLAlchemy  # 🗄️ Manejo de base de datos
 from flask_bcrypt import Bcrypt  # 🔐 Hashing seguro de contraseñas
 from flask_login import LoginManager  # 👤 Gestión de sesiones de usuario
@@ -10,6 +10,7 @@ from flask_mail import Mail  # 📧 Envío de correos electrónicos
 from config import Config  # ⚙️ Configuración de la aplicación
 from datetime import datetime  # 🕒 Inyección del año actual en las plantillas
 from flask_wtf.csrf import CSRFProtect  # 🛡️ Protección contra ataques CSRF
+
 
 # 🔧 INICIALIZACIÓN GLOBAL DE EXTENSIONES
 db = SQLAlchemy()  # Inicialización de la base de datos
@@ -74,4 +75,5 @@ def create_app():
         return {'current_year': datetime.now().year}
 
     return app
+
 

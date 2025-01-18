@@ -32,4 +32,6 @@ class Config:
     MAIL_USE_TLS = True  # Uso de TLS (Transport Layer Security)
     MAIL_USERNAME = os.environ.get('EMAIL_USER')  # Usuario (correo electrónico)
     MAIL_PASSWORD = os.environ.get('EMAIL_PASS')  # Contraseña del correo
+    MAIL_DEFAULT_SENDER = os.getenv('SENDER',  'default_sender@example.com') # Dirección del remitente
+
 

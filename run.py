@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     # Ejecuta la aplicación en modo debug (útil para desarrollo)
     # Si deseas cambiar la dirección IP o puerto, puedes hacerlo aquí.
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
     """
     📌 Parámetros disponibles para el método run():

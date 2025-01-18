@@ -2,13 +2,15 @@
 
 # 📋 Archivo que define las rutas relacionadas con el registro de usuarios.
 
+import random
+from flask import current_app
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
-from app import mail, bcrypt, db
+from app import mail, bcrypt
 from validate_email_address import validate_email
 from app.models import User  # Importar el modelo de usuario
-import random
 from datetime import datetime, timezone
+
 
 # 🔷 1. Definición del Blueprint para manejar las rutas del registro de usuarios.
 # El prefijo `/register` se agrega automáticamente a todas las rutas definidas en este blueprint.
@@ -98,7 +100,7 @@ def send_verification_email(email, code):
     # ✉️ Configurar el mensaje de correo.
     msg = Message(
         subject='Verifica tu cuenta',
-        sender='tu_correo@gmail.com',  # 🔄 Reemplaza con tu dirección de correo real.
+        sender=current_app.config['MAIL_DEFAULT_SENDER'],  # Usa la configuración centralizada.
         recipients=[email]
     )
     # 🔹 Cuerpo del mensaje con el código de verificación.
@@ -127,11 +129,4 @@ def validate_password(password):
 🔹 2. La función `send_verification_email()` utiliza Flask-Mail para enviar correos.
 🔹 3. Las funciones de validación (como `validate_password`) garantizan la seguridad de los datos del usuario.
 
-🔧 MODIFICACIONES SUGERIDAS:
-- Cambia `sender='tu_correo@gmail.com'` por una dirección válida.
-- Asegúrate de que la plantilla `verification_email.html` esté correctamente diseñada y ubicada en la carpeta `templates/`.
-
-🚀 MEJORAS FUTURAS:
-- Implementar un temporizador para expirar los códigos de verificación después de cierto tiempo.
-- Agregar lógica para reintentar el envío del correo en caso de fallo.
 """

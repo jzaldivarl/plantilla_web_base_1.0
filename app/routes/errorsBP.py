@@ -71,7 +71,7 @@ def internal_server_error(error):
     """
     # Registra el error en el archivo de logs de la aplicación.
     current_app.logger.error(f"Error 500: {error}")
-    
+
     # Muestra un mensaje flash para notificar al usuario.
     flash('Ocurrió un error interno en el servidor.', 'danger')
 
