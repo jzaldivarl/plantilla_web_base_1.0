@@ -8,10 +8,8 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from app import db, mail, bcrypt
-from app.models import User, PasswordRecoveryAttempt
+from app.models import User
 from app.routes.auth.registerBP import validate_password
-from datetime import datetime, timezone, timedelta
-
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()
@@ -26,64 +24,25 @@ recovery_passBp = Blueprint('recovery_pass', __name__, url_prefix='/auth/recover
 # La clave secreta asegura que los tokens sean únicos para esta aplicación.
 serializer = URLSafeTimedSerializer(os.getenv('TOKEN_SECRET_KEY')) # Clave desde .env
 
-# Función para verificar el límite de intentos de recuperación
-def has_exceeded_recovery_limit(user):
-    """Verifica si el usuario ha excedido el límite de intentos en las últimas 3 horas."""
-    limit = 3  # Nuevo límite de intentos permitidos
-    time_window = datetime.now(timezone.utc) - timedelta(hours=3)  # Ventana de tiempo ajustada
-    attempts = PasswordRecoveryAttempt.query.filter(
-        PasswordRecoveryAttempt.user_id == user.id,
-        PasswordRecoveryAttempt.timestamp >= time_window
-    ).count()
-    return attempts >= limit
 
-def log_recovery_attempt(user):
-    """Registra un intento de recuperación de contraseña para un usuario."""
-    attempt = PasswordRecoveryAttempt(user_id=user.id, timestamp=datetime.now(timezone.utc))
-    db.session.add(attempt)
-    db.session.commit()
-
-
-# ➕ 1. RUTA PARA SOLICITAR RECUPERACIÓN DE CONTRASEÑA
+# Ruta para solicitar recuperación de contraseña
 @recovery_passBp.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
-
-    """
-    Ruta para manejar la solicitud de recuperación de contraseña. 
-    Ahora requiere un PIN para validar que la solicitud es legítima.
-    """
-
     # Si el método de la solicitud es POST (formulario enviado)
     if request.method == 'POST':
-        # Obtener el email y el pin ingresado por el usuario en el formulario
+        # Obtener el correo electrónico ingresado por el usuario
         email = request.form.get('email')
-        pin = request.form.get('pin')
-
-        # Buscar al usuario en la base de datos por su email
+        # Buscar al usuario en la base de datos usando el correo electrónico
         user = User.query.filter_by(email=email).first()
-
-        # Si el usuario existe
         if user:
-            if has_exceeded_recovery_limit(user):
-                flash('Has excedido el límite de intentos. Intenta nuevamente en 3 horas.', 'danger')
-                return redirect(url_for('recovery_pass.reset_password_request'))
-
-            # Validar que el PIN ingresado coincide con el PIN del usuario
-            if user.recovery_pin == pin:
-                # Si el PIN es correcto, enviar el correo de recuperación
-                send_reset_email(user)
-                log_recovery_attempt(user)
-                flash('Se ha enviado un correo para restablecer tu contraseña.', 'info')
-                # Redirigir al inicio de sesión después de enviar el correo
-                return redirect(url_for('login.login_view'))
-            else:
-                log_recovery_attempt(user)
-                # Si el PIN no coincide, mostrar un mensaje de error
-                flash('El PIN ingresado es incorrecto.', 'danger')
+            # Si el usuario existe, enviar un correo electrónico de recuperación
+            send_reset_email(user)
+            flash('Se ha enviado un correo para restablecer tu contraseña.', 'info')
+            # Redirigir al inicio de sesión después de enviar el correo
+            return redirect(url_for('login.login_view'))
         else:
             # Si el usuario no existe, mostrar un mensaje de error
             flash('No se encontró una cuenta con ese correo.', 'danger')
-
     # Renderizar la plantilla para solicitar recuperación de contraseña
     return render_template('auth/reset_password_request.html')
 
@@ -148,5 +107,4 @@ def reset_password(token):
 
     # Renderizar el formulario para restablecer la contraseña
     return render_template('auth/reset_password.html')
-
 

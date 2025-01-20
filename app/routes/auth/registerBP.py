@@ -8,7 +8,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_mail import Message
 from app import mail, bcrypt
 from validate_email_address import validate_email
-from app.models import User  # Importar el modelo de usuario
+from app.models import User, generate_unique_code
 from datetime import datetime, timezone
 
 
@@ -53,7 +53,9 @@ def register_view():
             return redirect(url_for('register.register_view'))
 
         # 5️⃣ Generar un código de verificación de 6 dígitos aleatorio.
-        verification_code = str(random.randint(100000, 999999))
+        #verification_code = str(random.randint(100000, 999999))
+        verification_code = generate_unique_code(User, 'verification_code', length=6)
+        recovery_pin = generate_unique_code(User, 'recovery_pin', length=6)
 
         # 🕒 Establecer el timestamp actual en UTC para registro y seguimiento.
         timestamp = datetime.now(timezone.utc)
@@ -64,6 +66,7 @@ def register_view():
             'email': email,
             'password_hash': bcrypt.generate_password_hash(password).decode('utf-8'),
             'verification_code': verification_code,
+            'recovery_pin': recovery_pin,
             'timestamp': timestamp
         }
 
@@ -122,11 +125,4 @@ def validate_password(password):
     pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
     return re.match(pattern, password)
 
-"""
-📌 NOTAS IMPORTANTES:
 
-🔹 1. Este módulo utiliza sesiones para almacenar temporalmente los datos del usuario hasta que se complete la verificación.
-🔹 2. La función `send_verification_email()` utiliza Flask-Mail para enviar correos.
-🔹 3. Las funciones de validación (como `validate_password`) garantizan la seguridad de los datos del usuario.
-
-"""

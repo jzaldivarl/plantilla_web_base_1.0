@@ -1,5 +1,6 @@
 # app/routes/auth/loginBP.py
 
+
 # 📦 IMPORTACIÓN DE MÓDULOS
 from flask import Blueprint, render_template, request, redirect, url_for, flash  # 🌐 Módulos para rutas y manejo de mensajes flash
 from flask_login import login_user, logout_user, login_required  # 🔐 Manejo de sesiones de usuario

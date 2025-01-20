@@ -23,20 +23,28 @@ Dashboard de Administración
     <table class="table table-striped table-bordered">
         <thead class="small" >
             <tr>
-                <th>USUARIO</th>
+                <th>ID</th>
+                <th>USER</th>
                 <th>E-MAIL</th>
+                <!--<th>PASSWORD</th>-->
                 <th>ADMIN</th>
-                <th>VERIFICADO</th>
-                <th>ACCIONES</th>
+                <!--<th>VERIFICATION CODE</th>-->
+                <th>VERIFIED</th>
+                <th>PIN</th>
+                <th>ACTIONS</th>
             </tr>
         </thead>
         <tbody id="users-table">
             {% for user in users.items %}
             <tr>
+                <td>{{ user.id }}</td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.email }}</td>
+                <!--<td>{{ user.password_hash }}</td>-->
                 <td>{{ 'Sí' if user.is_admin else 'No' }}</td>
+                <!--<td>{{ user.verification_code}}</td>-->
                 <td>{{ 'Sí' if user.is_verified else 'No' }}</td>
+                <td>{{ user.recovery_pin}}</td>
                 <td>
                     <a href="{{ url_for('dashboard.edit_user', user_id=user.id) }}"
                         class="btn btn-warning btn-sm mb-1 mt-1">

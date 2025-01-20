@@ -1,10 +1,13 @@
 # app/routes/auth/verifyBP.py
 
 # 📦 IMPORTACIÓN DE MÓDULOS
+from flask import current_app
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
+from flask_mail import Message
+from app import mail
 from datetime import datetime, timezone, timedelta
 from app import db  # 📚 Conexión a la base de datos
-from app.models import User  # 👤 Modelo de usuario
+from app.models import User, generate_unique_code
 from app.routes.auth.registerBP import send_verification_email  # 📧 Función para enviar emails de verificación
 from functools import wraps  # 🛠️ Para crear decoradores personalizados
 import random  # 🎲 Para generar códigos de verificación aleatorios
@@ -72,10 +75,14 @@ def verify_view():
             username=pending_user['username'],
             email=pending_user['email'],
             password_hash=pending_user['password_hash'],
+            recovery_pin=pending_user['recovery_pin'],  # Asegura que el PIN se guarda
             is_verified=True  # ✅ Marca al usuario como verificado.
         )
         db.session.add(new_user)  # 💾 Guarda el usuario en la base de datos.
         db.session.commit()  # 🔐 Confirma los cambios.
+
+        # Enviar el correo con el PIN de recuperación al nuevo usuario
+        send_pin_email(new_user)
 
         # 🧹 Limpia los datos relacionados con la verificación en la sesión.
         session.pop('pending_user', None)
@@ -83,7 +90,8 @@ def verify_view():
         session.pop('failed_attempts', None)
 
         # 🎉 Muestra un mensaje de éxito y redirige al inicio de sesión.
-        flash('Cuenta verificada y registrada exitosamente. Ahora puedes iniciar sesión.', 'success')
+        flash('Cuenta verificada y registrada exitosamente. Tu PIN de recuperación ha sido enviado a tu correo.\n'
+                                   'Ahora puedes iniciar sesión.', 'success')
         return redirect(url_for('login.login_view'))
 
     # 🖥️ Si el método es GET, muestra la página de verificación.
@@ -115,7 +123,8 @@ def resend_code():
         new_code = pending_user['verification_code']
     else:
         # 🎲 Genera un nuevo código si el anterior ha expirado.
-        new_code = str(random.randint(100000, 999999))
+        #new_code = str(random.randint(100000, 999999))
+        new_code = generate_unique_code(User, 'verification_code', length=6)
         pending_user['verification_code'] = new_code
         pending_user['timestamp'] = datetime.now(timezone.utc)
         session['pending_user'] = pending_user
@@ -128,4 +137,33 @@ def resend_code():
     except Exception as e:
         # ❌ Si ocurre un error, devuelve un mensaje de error.
         return jsonify({'message': f'Error al enviar el correo: {str(e)}', 'category': 'danger'}), 500
+
+
+def send_pin_email(user):
+    """
+    Envía un correo electrónico al usuario con el PIN de recuperación.
+    """
+    msg = Message(
+        subject="Bienvenido a la Aplicación - Código PIN de Recuperación",
+        sender=current_app.config['MAIL_DEFAULT_SENDER'],
+        recipients=[user.email]
+    )
+    msg.body = f"""
+    Hola {user.username},
+
+    Gracias por registrarte en nuestra aplicación.
+
+    Aquí tienes tu código PIN de recuperación:
+    {user.recovery_pin}
+
+    Es importante que guardes este código en un lugar seguro.
+    Lo necesitarás si alguna vez olvidas tu contraseña.
+
+    ¡Bienvenido y esperamos que disfrutes de nuestra plataforma!
+
+    Saludos,
+    El equipo de soporte
+    """
+    mail.send(msg)
+
 

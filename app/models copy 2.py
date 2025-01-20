@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
         default=lambda: str(random.randint(100000, 999999))  # Código de verificación por defecto
     )
     is_verified = db.Column(db.Boolean, default=False)  # Indica si el usuario ha verificado su cuenta
-    recovery_pin = db.Column(db.String(6), nullable=False, unique=True, default=lambda: generate_unique_code(User, 'recovery_pin'))
+    recovery_pin = db.Column(db.String(6), nullable=False, default=lambda: ''.join(random.choices(string.digits, k=6)))
     # Se genera un PIN único de 6 dígitos asociado al usuario para recuperación.
 
 
@@ -46,7 +46,6 @@ class User(UserMixin, db.Model):
     def generate_verification_code():
         """Genera un código de verificación de 6 dígitos."""
         return ''.join(random.choices(string.digits, k=6))
-
 
 
 # Modelo para gestionar intentos de recuperación de contraseña
@@ -78,23 +77,4 @@ class PasswordRecoveryAttempt(db.Model):
         db.session.add(attempt)
         db.session.commit()
 
-
-def generate_unique_code(model, column_name, length=6):
-    """
-    Genera un código único que no existe en la columna especificada de un modelo.
-
-    Args:
-        model (db.Model): El modelo en el que buscar colisiones.
-        column_name (str): El nombre de la columna donde verificar unicidad.
-        length (int): La longitud del código generado (por defecto 6).
-
-    Returns:
-        str: Un código único.
-    """
-    while True:
-        code = f"{random.randint(10**(length-1), 10**length - 1)}"
-        # Verifica si el código ya existe en la base de datos
-        exists = db.session.query(model.query.filter(getattr(model, column_name) == code).exists()).scalar()
-        if not exists:
-            return code
 
