@@ -53,7 +53,6 @@ def register_view():
             return redirect(url_for('register.register_view'))
 
         # 5️⃣ Generar un código de verificación de 6 dígitos aleatorio.
-        #verification_code = str(random.randint(100000, 999999))
         verification_code = generate_unique_code(User, 'verification_code', length=6)
         recovery_pin = generate_unique_code(User, 'recovery_pin', length=6)
 
@@ -80,7 +79,7 @@ def register_view():
             return redirect(url_for('verify.verify_view'))
         except Exception as e:
             # ❗ Capturar errores al enviar el correo.
-            flash(f'Error al enviar el correo de verificación: {str(e)}', 'danger')
+            flash(f'Error al enviar el correo de verificación: {str(e)} \n verifique su configuración de correo y su conexión de internet', 'danger')
             return redirect(url_for('register.register_view'))
 
     # 🖥️ Si es una solicitud GET, renderizar la página de registro.

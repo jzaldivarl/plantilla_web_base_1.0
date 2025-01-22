@@ -29,7 +29,7 @@ serializer = URLSafeTimedSerializer(os.getenv('TOKEN_SECRET_KEY')) # Clave desde
 # Función para verificar el límite de intentos de recuperación
 def has_exceeded_recovery_limit(user):
     """Verifica si el usuario ha excedido el límite de intentos en las últimas 3 horas."""
-    limit = 3  # Nuevo límite de intentos permitidos
+    limit = 3  # límite de intentos permitidos al usuario
     time_window = datetime.now(timezone.utc) - timedelta(hours=3)  # Ventana de tiempo ajustada
     attempts = PasswordRecoveryAttempt.query.filter(
         PasswordRecoveryAttempt.user_id == user.id,
@@ -49,7 +49,7 @@ def log_recovery_attempt(user):
 def reset_password_request():
 
     """
-    Ruta para manejar la solicitud de recuperación de contraseña. 
+    Ruta para manejar la solicitud de recuperación de contraseña.
     Ahora requiere un PIN para validar que la solicitud es legítima.
     """
 
@@ -65,7 +65,7 @@ def reset_password_request():
         # Si el usuario existe
         if user:
             if has_exceeded_recovery_limit(user):
-                flash('Has excedido el límite de intentos. Intenta nuevamente en 3 horas.', 'danger')
+                flash(f'Has excedido el límite de intentos. Intenta nuevamente en 3 horas.', 'danger')
                 return redirect(url_for('recovery_pass.reset_password_request'))
 
             # Validar que el PIN ingresado coincide con el PIN del usuario
@@ -130,7 +130,7 @@ def reset_password(token):
     # Si el método de la solicitud es POST (formulario enviado)
     if request.method == 'POST':
         # Obtener la nueva contraseña ingresada por el usuario
-        new_password = request.form.get('password', '')
+        new_password = request.form.get('password', '').strip()
         if new_password:
             # 4️⃣ Validar la seguridad de la contraseña utilizando la función de validación
             if not validate_password(new_password):

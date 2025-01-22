@@ -1,5 +1,11 @@
 # logging_config.py #
 
+#import sys
+#import os
+
+# Agregar la ruta al directorio raíz del proyecto
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import logging
 from logging.handlers import RotatingFileHandler
 

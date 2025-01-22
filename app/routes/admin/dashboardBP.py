@@ -31,10 +31,14 @@ def admin_required(f):
 @login_required
 @admin_required
 def dashboard():
+    """
+    Muestra el panel de administración con un buscador y paginación de usuarios.
+    """
+
     # 📝 Obtener el término de búsqueda de los parámetros de la URL
     search_query = request.args.get('search', '')
 
-    # 🔎 Crear la consulta base para los usuarios
+    # 🔎 Crear la consulta base para buscar usuarios
     users_query = User.query
     if search_query:
         # 🔍 Filtrar por nombre de usuario o email que coincida con el término de búsqueda
@@ -46,7 +50,7 @@ def dashboard():
     page = request.args.get('page', 1, type=int)
     users = users_query.paginate(page=page, per_page=5)
 
-    # 📊 Renderizar el dashboard de administración
+    # 📊 Renderizar el dashboard de administración o con los resultados
     return render_template('admin/dashboard.html', users=users, search_query=search_query)
 
 # ➕ 4. RUTA PARA AGREGAR UN NUEVO USUARIO (`/admin/add_user`)
@@ -54,6 +58,10 @@ def dashboard():
 @login_required
 @admin_required
 def add_user():
+    """
+    Permite agregar un nuevo usuario al sistema. Requiere privilegios de administrador.
+    """
+    # si el método del formulario es 'POST'
     if request.method == 'POST':
         try:
             # 📥 Obtener los datos del formulario
@@ -101,7 +109,13 @@ def add_user():
 @login_required
 @admin_required
 def edit_user(user_id):
-    user = User.query.get_or_404(user_id)  # 🔍 Buscar usuario por ID
+
+    """
+    Permite editar los datos de un usuario existente.
+    """
+    # 🔍 Busca el usuario o devuelve un 404 si no existe
+    user = User.query.get_or_404(user_id)
+
     if request.method == 'POST':
         try:
             # 📥 Obtener datos del formulario
@@ -150,8 +164,12 @@ def edit_user(user_id):
 @login_required
 @admin_required
 def delete_user(user_id):
+    """
+    Elimina un usuario del sistema. Requiere privilegios de administrador.
+    """
     try:
-        user = User.query.get_or_404(user_id)  # 🔍 Buscar usuario por ID
+        # 🔍 Busca el usuario o devuelve un 404 si no existe
+        user = User.query.get_or_404(user_id)
         db.session.delete(user)  # ❌ Eliminar usuario
         db.session.commit()
         flash('Usuario eliminado exitosamente.', 'success')
@@ -161,5 +179,4 @@ def delete_user(user_id):
         flash(f'Error: {e} al eliminar el usuario. Intenta nuevamente.', 'danger')
 
     return redirect(url_for('dashboard.dashboard'))
-
 

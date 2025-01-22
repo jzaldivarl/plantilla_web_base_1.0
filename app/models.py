@@ -1,5 +1,27 @@
 # app/models.py - Definición de modelos para la base de datos
 
+"""
+Resumen:
+Este archivo contiene la definición de los modelos de la base de datos para la aplicación Flask.
+
+Modelos definidos:
+1. User:
+   - Representa a los usuarios de la aplicación.
+   - Incluye información básica como nombre de usuario, correo electrónico, contraseña, rol de administrador, etc.
+   - Métodos:
+     - `set_password`: Genera y almacena el hash de la contraseña.
+     - `check_password`: Verifica una contraseña con el hash almacenado.
+     - `generate_verification_code`: Genera un código de verificación único de 6 dígitos.
+
+2. PasswordRecoveryAttempt:
+   - Registra intentos de recuperación de contraseñas de los usuarios.
+   - Métodos:
+     - `count_attempts_in_last_hour`: Cuenta los intentos de recuperación en la última hora para un usuario.
+     - `register_attempt`: Registra un nuevo intento de recuperación de contraseña.
+
+3. Función `generate_unique_code`:
+   - Genera un código único no existente en la base de datos para un modelo y columna específicos.
+"""
 
 from app import db, bcrypt  # Base de datos y utilidad de hashing de contraseñas
 from flask_login import UserMixin  # Gestión de sesiones de usuario
@@ -27,11 +49,11 @@ class User(UserMixin, db.Model):
     recovery_pin = db.Column(db.String(6), nullable=False, unique=True, default=lambda: generate_unique_code(User, 'recovery_pin'))
     # Se genera un PIN único de 6 dígitos asociado al usuario para recuperación.
 
-
     # Relación con intentos de recuperación de contraseña
     recovery_attempts = db.relationship(
         'PasswordRecoveryAttempt', backref='user', lazy=True, cascade="all, delete-orphan"
     )
+
     # Método para establecer el hash de la contraseña
     def set_password(self, password):
         """Genera y almacena el hash de la contraseña del usuario."""
@@ -46,7 +68,6 @@ class User(UserMixin, db.Model):
     def generate_verification_code():
         """Genera un código de verificación de 6 dígitos."""
         return ''.join(random.choices(string.digits, k=6))
-
 
 
 # Modelo para gestionar intentos de recuperación de contraseña
@@ -97,4 +118,3 @@ def generate_unique_code(model, column_name, length=6):
         exists = db.session.query(model.query.filter(getattr(model, column_name) == code).exists()).scalar()
         if not exists:
             return code
-
