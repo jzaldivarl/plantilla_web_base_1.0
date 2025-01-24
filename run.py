@@ -1,5 +1,6 @@
 # run.py - Archivo principal para ejecutar la aplicación Flask
 
+
 # Importa la función para crear la instancia de la app
 from app import create_app
 
@@ -7,13 +8,16 @@ from app import create_app
 # usando la función definida en app/__init__.py
 app = create_app()
 
+
 # Punto de entrada de la aplicación
 if __name__ == '__main__':
 
     # Ejecuta la aplicación en modo debug (útil para desarrollo)
+    app.run(debug=True)
+
     # Si deseas cambiar la dirección IP o puerto, puedes hacerlo aquí.
     #app.run(debug=True, host='0.0.0.0', port=5000)
-    app.run(debug=True)
+
 
     """
     📌 Parámetros disponibles para el método run():

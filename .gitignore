@@ -1,8 +1,12 @@
 # .gitignore
 
-.env
 __pycache__
-pruebas.py
+.env
+
 app/__pycache__
 app/routes/__pycache__
+app/migrations/__pycache__
+app/migrations/versions/__pycache__
+app/utils/__pycache__
+
 

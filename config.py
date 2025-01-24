@@ -38,5 +38,6 @@ class Config:
     Este archivo configura e inicializa todas las extensiones, define la función de fábrica
     para crear la aplicación Flask y registra blueprints, además de manejar sesiones y la
     inyección de datos globales como el año actual.
+
     """
 

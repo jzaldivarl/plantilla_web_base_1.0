@@ -46,7 +46,11 @@ class User(UserMixin, db.Model):
         default=lambda: str(random.randint(100000, 999999))  # Código de verificación por defecto
     )
     is_verified = db.Column(db.Boolean, default=False)  # Indica si el usuario ha verificado su cuenta
-    recovery_pin = db.Column(db.String(6), nullable=False, unique=True, default=lambda: generate_unique_code(User, 'recovery_pin'))
+    recovery_pin = db.Column(
+        db.String(6),
+        nullable=False,
+        unique=True,
+        default=lambda: generate_unique_code(User, 'recovery_pin'))
     # Se genera un PIN único de 6 dígitos asociado al usuario para recuperación.
 
     # Relación con intentos de recuperación de contraseña

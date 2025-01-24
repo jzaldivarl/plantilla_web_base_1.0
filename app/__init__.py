@@ -1,5 +1,12 @@
 # app/__init__.py - Configuración e inicialización de la aplicación Flask
 
+"""
+Este archivo configura e inicializa todas las extensiones,define la función de fábrica para crear
+la aplicación Flask y registra blueprints, además de manejar sesiones y la inyección
+de datos globales como el año actual.
+
+Return: app
+"""
 
 # 🧩 1. IMPORTACIÓN DE MÓDULOS NECESARIOS
 from flask import Flask  # 🌐 Flask para la creación de la aplicación web
@@ -11,6 +18,7 @@ from flask_mail import Mail  # 📧 Envío de correos electrónicos
 from config import Config  # ⚙️ Configuración de la aplicación
 from datetime import datetime  # 🕒 Inyección del año actual en las plantillas
 from flask_wtf.csrf import CSRFProtect  # 🛡️ Protección contra ataques CSRF
+
 
 # 🔧 2. INICIALIZACIÓN GLOBAL DE EXTENSIONES
 db = SQLAlchemy()  # Inicialización de la base de datos
@@ -75,8 +83,3 @@ def create_app():
     return app
 
 
-""" Este archivo configura e inicializa todas las extensiones,
-    define la función de fábrica para crear la aplicación Flask y
-    registra blueprints, además de manejar sesiones y la inyección
-    de datos globales como el año actual.
-"""

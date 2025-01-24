@@ -121,7 +121,6 @@ plantilla-web-base-1.0/
 ├── migrations
 │   ├── alembic.ini
 │   ├── env.py
-│   ├── __pycache__
 │   ├── README
 │   ├── script.py.mako
 │   └── versions
@@ -146,5 +145,7 @@ Se aceptan contribuciones mediante pull requests. Por favor, asegúrate de que t
 
 Este proyecto está licenciado bajo la [MIT License](LICENSE).
 
-**Nota**: Aunque este proyecto funciona al 100%, se recomienda revisar y probar el código antes de usarlo en producción. Su propósito principal es facilitar el trabajo de desarrolladores principiantes que comienzan a usar Flask.
+**Nota**: Aunque este proyecto funciona al 100%, se recomienda revisar y probar el código antes de usarlo
+ en producción. Su propósito principal es facilitar el trabajo de desarrolladores principiantes de forma
+ profesional que comienzan a usar Flask.
 

@@ -13,9 +13,10 @@ from app.models import User
 app = create_app()
 
 # esrciba los campos del usuario que va a crear en la BD
+user = 'admin'
 numero = 2
-generic_user = f'admin{numero}'
-generic_email = f'admin{numero}@example.com'
+generic_user = f'{user}{numero}'
+generic_email = f'{user}{numero}@example.com'
 generic_password = 'admin123'
 generic_is_admin = True
 generic_is_verified = True
