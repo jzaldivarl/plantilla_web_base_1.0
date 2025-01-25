@@ -106,11 +106,13 @@ Esta plantilla incluye:
 
 6. **Ejecutar la aplicación**:
 
-   ```bash
+   ```
+   bash
    python3 run.py
    ```
 
-   ```cmd
+   ```
+   cmd
    python run.py
    ```
 
