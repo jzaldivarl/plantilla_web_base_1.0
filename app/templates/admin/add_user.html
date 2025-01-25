@@ -22,7 +22,7 @@
             <div class="mb-1">
                 <label for="username" class="form-label">*usuario</label>
                 <input type="text" class="form-control" id="username" name="username" required>
-                <small class="text-muted">El nombre de usuario debe tener al menos 5 caracteres.</small>
+                <small class="text-muted">El nombre de usuario debe tener al menos 5 caracteres (Opcional para Administradores).</small>
                 <div class="invalid-feedback">Por favor, ingresa un nombre de usuario.</div>
             </div>
 
@@ -30,7 +30,7 @@
             <div class="mb-1">
                 <label for="email" class="form-label">*correo electrónico</label>
                 <input type="email" class="form-control" id="email" name="email" required>
-                <small class="text-muted">El e-mail debe tener un formato válido (ejemplo: usuario123@gmail.com).</small>
+                <small class="text-muted">El e-mail debe tener un formato válido ejemplo: usuario123@gmail.com. (Opcional para Administradores).</small>
                 <div class="invalid-feedback">Por favor, ingresa un correo válido.</div>
             </div>
 
@@ -38,7 +38,7 @@
             <div class="mb-3">
                 <label for="password" class="form-label">*contraseña</label>
                 <input type="password" class="form-control" id="password" name="password" required>
-                <small class="text-muted">Debe tener al menos 8 caracteres, incluyendo mayúsculas, números y símbolos.</small>
+                <small class="text-muted">Debe tener al menos 8 caracteres, incluyendo mayúsculas, números y símbolos (Opcional para Administradores).</small>
                 <div class="invalid-feedback">Por favor, ingresa una contraseña.</div>
             </div>
 
@@ -53,6 +53,7 @@
                 <input type="hidden" name="is_verified" value="off">
                 <input type="checkbox" class="form-check-input" id="is_verified" name="is_verified">
                 <label class="form-check-label" for="is_verified">¿verificado?</label>
+                <small class="text-muted">verificado automático la primera vez</small>
             </div>
 
             <!-- Botones para enviar el formulario o volver al dashboard -->

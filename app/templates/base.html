@@ -65,7 +65,7 @@
     <nav class="navbar navbar-expand-lg bg-light shadow navbar-fixed">
         <div class="container">
             <!-- Logo o nombre del sitio -->
-            <a class="navbar-brand" href="{{ url_for('home.home') }}">Mi Web</a>
+            <a class="navbar-brand" href="{{ url_for('home.home') }}">Plantilla web base 1.0</a>
 
             <!-- Botón para dispositivos móviles -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -131,9 +131,17 @@
     </main>
 
     <!-- Pie de página -->
-    <footer class="bg-light text-center py-2">
-        <p style="font-size: small;">&copy; {{ current_year }} Mi Sitio Web. Todos los derechos reservados.</p>
+    <footer class="bg-light text-center mt-4 py-3">
+        <p>
+            Si esta plantilla te resulta útil, considera apoyarnos con una donación para seguir creando proyectos como este.
+        </p>
+        <a href="/donate" class="btn btn-secondary btn-sm">Donar</a>
+        <p style="font-size: small;">
+            &copy; {{ current_year }} Plantilla Web Base 1.0. Diseñada para la comunidad. <br>
+            Código abierto y gratuito para facilitar el desarrollo web profesional.
+        </p>
     </footer>
+
 
     <!-- Script para hacer desaparecer los mensajes flash después de 5 segundos -->
     <script>

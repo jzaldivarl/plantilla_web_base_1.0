@@ -36,6 +36,11 @@ Esta plantilla incluye:
    - CRUD para administradores.
    - Roles y permisos.
 
+   nota: Los formularios de adición y edición de usuarios no estan validados obligatoriamente
+         como es el caso del formulario de registro. esto es para que el administrador tenga más
+         flexibilidad de manera general, lo cual requiere mas atención y cuidado de no crear cuentas
+         temporales, o no verificadas que puedan ser una vulnerabilidad para la aplicación.
+
 3. **Panel de Administración**:
 
    - Paginación y buscador.
@@ -102,12 +107,16 @@ Esta plantilla incluye:
 6. **Ejecutar la aplicación**:
 
    ```bash
-   flask run
+   python3 run.py
+   ```
+
+   ```cmd
+   python run.py
    ```
 
 La aplicación estará disponible en [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
-## Estructura del Proyecto
+## Estructura del General del Proyecto
 
 ```
 plantilla-web-base-1.0/
@@ -145,7 +154,15 @@ Se aceptan contribuciones mediante pull requests. Por favor, asegúrate de que t
 
 Este proyecto está licenciado bajo la [MIT License](LICENSE).
 
-**Nota**: Aunque este proyecto funciona al 100%, se recomienda revisar y probar el código antes de usarlo
- en producción. Su propósito principal es facilitar el trabajo de desarrolladores principiantes de forma
- profesional que comienzan a usar Flask.
+**Nota**: Aunque este proyecto funciona al 100%, se recomienda revisar y probar el código antes de usarlo en producción. Su propósito principal es facilitar el trabajo de desarrolladores principiantes de forma profesional que comienzan a usar Flask.
+
+
+## Donaciones
+
+Si deseas apoyar este proyecto, considera realizar una donación en criptomonedas.
+
+- **USDT (TRC20)**: *[TJHmU2QVHs8QTXBnfpk97LH7Mpb2CyZ8cA]*
+
+¡Gracias por tu apoyo! 🙌
+
 
