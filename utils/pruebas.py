@@ -3,15 +3,16 @@ from flask_bcrypt import Bcrypt
 #import sys
 #import os
 
-# Agregar la ruta al directorio raíz del proyecto
+# Add the path to the project's root directory
 #sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 bcrypt = Bcrypt()
 
-# Hash de ejemplo
+# Example hash
 hashed_password = bcrypt.generate_password_hash("admin123").decode('utf-8')
-print(f"Hash generado: {hashed_password}")
+print(f"Generated hash: {hashed_password}")
 
-# Verificación
+# Verification
 is_valid = bcrypt.check_password_hash(hashed_password, "admin123")
-print(f"¿Es válida la contraseña? {is_valid}")
+print(f"Is the password valid? {is_valid}")
+

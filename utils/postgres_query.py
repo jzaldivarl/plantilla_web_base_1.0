@@ -3,28 +3,28 @@ import psycopg2
 #import sys
 #import os
 
-# Agregar la ruta al directorio raíz del proyecto
+# Add the path to the project's root directory
 #sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def execute_query(query, params=None):
     """
-    Ejecuta una consulta SQL en PostgreSQL.
+    Executes an SQL query on PostgreSQL.
 
-    :param query: Consulta SQL como cadena.
-    :param params: Parámetros opcionales para la consulta.
+    :param query: SQL query as a string.
+    :param params: Optional parameters for the query.
     """
     try:
-        # Conexión a la base de datos
+        # Connect to the database
         connection = psycopg2.connect(
-            dbname="nombre_base_de_datos",
-            user="usuario",
-            password="contraseña",
+            dbname="database_name",
+            user="user",
+            password="password",
             host="localhost",
             port=5432
         )
         cursor = connection.cursor()
 
-        # Ejecutar consulta
+        # Execute query
         cursor.execute(query, params)
         if query.strip().lower().startswith("select"):
             results = cursor.fetchall()
@@ -32,18 +32,19 @@ def execute_query(query, params=None):
                 print(row)
         else:
             connection.commit()
-            print("Consulta ejecutada exitosamente.")
+            print("Query executed successfully.")
 
     except Exception as e:
         print(f"Error: {e}")
 
     finally:
-        # Cerrar conexión
+        # Close connection
         if connection:
             cursor.close()
             connection.close()
 
 if __name__ == "__main__":
-    # Escribe tu consulta aquí
-    query = "SELECT * FROM nombre_tabla;"
+    # Write your query here
+    query = "SELECT * FROM table_name;"
     execute_query(query)
+

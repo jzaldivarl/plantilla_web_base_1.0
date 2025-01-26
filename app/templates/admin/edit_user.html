@@ -1,65 +1,66 @@
 <!-- app/templates/admin/edit_user.html -->
 
 {% extends 'base.html' %}
-<!-- Hereda de la plantilla base.html -->
+<!-- Inherits from the base.html template -->
 
-{% block title %}Editar Usuario{% endblock %}
-<!-- Define el título de la página -->
+{% block title %}Edit User{% endblock %}
+<!-- Defines the page title -->
 
 {% block content %}
 <div class="container mt-5 d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card shadow-sm p-4" style="width: 100%; max-width: 360px;">
-        <!-- Contenedor centrado para el formulario de edición de usuario -->
+        <!-- Centered container for the user edit form -->
 
-        <h4 class="text-center mb-4">Editar Usuario</h4>
+        <h4 class="text-center mb-4">Edit User</h4>
 
-        <!-- Formulario para editar usuarios -->
+        <!-- Form for editing users -->
         <form method="POST" class="needs-validation" novalidate>
 
-            <!-- ✅ Campo oculto para el token CSRF para seguridad -->
+            <!-- ✅ Hidden field for CSRF token for security -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-            <!-- Campo para editar el nombre de usuario -->
+            <!-- Field for editing the username -->
             <div class="mb-3">
-                <label for="username" class="form-label">*usuario</label>
+                <label for="username" class="form-label">*Username</label>
                 <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
-                <small class="text-muted">El nombre de usuario debe tener al menos 5 caracteres.</small>
-                <div class="invalid-feedback">Por favor, ingresa un nombre de usuario.</div>
+                <small class="text-muted">The username must have at least 5 characters.</small>
+                <div class="invalid-feedback">Please enter a username.</div>
             </div>
 
-            <!-- Campo para editar el correo electrónico -->
+            <!-- Field for editing the email -->
             <div class="mb-3">
-                <label for="email" class="form-label">*correo electrónico</label>
+                <label for="email" class="form-label">*Email</label>
                 <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
-                <small class="text-muted">El e-mail debe tener un formato válido (ejemplo: usuario123@gmail.com).</small>
-                <div class="invalid-feedback">Por favor, ingresa un correo válido.</div>
+                <small class="text-muted">The email must be in a valid format (e.g., user123@gmail.com).</small>
+                <div class="invalid-feedback">Please enter a valid email.</div>
             </div>
 
-            <!-- Campo para editar la contraseña -->
+            <!-- Field for editing the password -->
             <div class="mb-3">
-                <label for="password" class="form-label">contraseña (opcional)</label>
+                <label for="password" class="form-label">Password (optional)</label>
                 <input type="password" class="form-control" id="password" name="password">
-                <div class="form-text">No edites este campo si no deseas cambiar la contraseña.</div>
+                <div class="form-text">Leave this field blank if you don't want to change the password.</div>
             </div>
 
-            <!-- Checkbox para definir si el usuario es administrador -->
+            <!-- Checkbox to define if the user is an administrator -->
             <div class="form-check mb-2">
                 <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin" {% if user.is_admin %}checked{% endif %}>
-                <label class="form-check-label" for="is_admin">¿administrador?</label>
+                <label class="form-check-label" for="is_admin">Admin?</label>
             </div>
 
-            <!-- Checkbox para definir si el usuario está verificado -->
+            <!-- Checkbox to define if the user is verified -->
             <div class="form-check mb-2">
                 <input type="checkbox" class="form-check-input" id="is_verified" name="is_verified" {% if user.is_verified %}checked{% endif %}>
-                <label class="form-check-label" for="is_verified">¿verificado?</label>
+                <label class="form-check-label" for="is_verified">Verified?</label>
             </div>
 
-            <!-- Botones para enviar el formulario o volver al dashboard -->
+            <!-- Buttons to submit the form or return to the dashboard -->
             <div class="mt-5 d-flex justify-content-center">
-                <button type="submit" class="btn btn-success" style="font-size: 14px">Guardar cambios</button>
-                <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary ms-3" style="font-size: 14px">Volver al Dashboard</a>
+                <button type="submit" class="btn btn-success" style="font-size: 14px">Save Changes</button>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary ms-3" style="font-size: 14px">Back to Dashboard</a>
             </div>
         </form>
     </div>
 </div>
 {% endblock %}
+

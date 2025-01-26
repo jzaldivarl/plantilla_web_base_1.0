@@ -2,12 +2,13 @@
 
 {% extends "base.html" %}
 
-{% block title %}Error 400 - Solicitud Incorrecta{% endblock %}
+{% block title %}Error 400 - Bad Request{% endblock %}
 
 {% block content %}
 <div class="container text-center mt-5">
     <h1 class="display-4 text-danger">Error 400</h1>
     <p class="lead">{{ message }}</p>
-    <a href="{{ url_for('login.login_view') }}" class="btn btn-primary" style="font-size: small;" >Volver al Inicio de Sesión</a>
+    <a href="{{ url_for('login.login_view') }}" class="btn btn-primary" style="font-size: small;" >Back to Login</a>
 </div>
 {% endblock %}
+

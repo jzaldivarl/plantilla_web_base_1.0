@@ -1,24 +1,22 @@
-<!-- app/templates/base.html -->
-
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-    <!-- Metadatos básicos -->
+    <!-- Basic metadata -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- CSRF Token para proteger formularios -->
+    <!-- CSRF Token to protect forms -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Título dinámico definido por cada página que extienda esta plantilla -->
+    <!-- Dynamic title defined by each page that extends this template -->
     <title>{% block title %}Home{% endblock %}</title>
 
-    <!-- CSS de Bootstrap y estilos personalizados -->
+    <!-- Bootstrap CSS and custom styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
     <style>
-        /* Estilo para una barra de navegación fija en la parte superior */
+        /* Style for a fixed navigation bar at the top */
         .navbar-fixed {
             position: fixed;
             top: 0;
@@ -27,12 +25,12 @@
             z-index: 1030;
         }
 
-        /* Ajuste de margen para que el contenido no quede oculto debajo de la barra de navegación */
+        /* Margin adjustment so the content isn't hidden under the navbar */
         body {
             padding-top: 70px;
         }
 
-        /* Estilos para mensajes flash como banners finos */
+        /* Styles for flash messages as thin banners */
         .flash-banner {
             position: fixed;
             top: 70px;
@@ -46,13 +44,13 @@
             z-index: 1050;
         }
 
-        /* Colores específicos según el tipo de mensaje */
+        /* Specific colors for each type of message */
         .flash-banner.alert-success { background-color: #28a745; }
         .flash-banner.alert-danger { background-color: #dc3545; }
         .flash-banner.alert-warning { background-color: #ffc107; color: #212529; }
         .flash-banner.alert-info { background-color: #17a2b8; }
 
-        /* Efecto de desvanecimiento para los mensajes flash */
+        /* Fading effect for flash messages */
         .fade-out {
             opacity: 0;
             transition: opacity 1s ease-out;
@@ -61,51 +59,51 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- Barra de navegación fija en la parte superior -->
+    <!-- Fixed navbar at the top -->
     <nav class="navbar navbar-expand-lg bg-light shadow navbar-fixed">
         <div class="container">
-            <!-- Logo o nombre del sitio -->
-            <a class="navbar-brand" href="{{ url_for('home.home') }}">Plantilla web base 1.0</a>
+            <!-- Logo or site name -->
+            <a class="navbar-brand" href="{{ url_for('home.home') }}">Base Web Template 1.0</a>
 
-            <!-- Botón para dispositivos móviles -->
+            <!-- Button for mobile devices -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Menú de navegación -->
+            <!-- Navigation menu -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <!-- Enlaces públicos -->
-                    <li class="nav-item"><a class="nav-link" href="/home">Bienvenido</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/products">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/services">Servicios</a></li>
+                    <!-- Public links -->
+                    <li class="nav-item"><a class="nav-link" href="/home">Welcome</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/services">Services</a></li>
                     <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
 
                     {% if current_user.is_authenticated %}
-                        <!-- Si el usuario está autenticado -->
+                        <!-- If the user is authenticated -->
                         <li class="nav-item">
                             <span class="nav-link">
                                 <i class="bi bi-person-circle"></i> {{ current_user.username }}
                             </span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-danger" href="{{ url_for('login.logout') }}" title="Cerrar sesión">
+                            <a class="nav-link text-danger" href="{{ url_for('login.logout') }}" title="Log out">
                                 <i class="bi bi-power"></i>
                             </a>
                         </li>
                         {% if current_user.is_admin %}
-                            <!-- Enlace adicional para usuarios administradores -->
+                            <!-- Additional link for admin users -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('dashboard.dashboard') }}">Dashboard</a>
                             </li>
                         {% endif %}
                     {% else %}
-                        <!-- Si el usuario no está autenticado -->
+                        <!-- If the user is not authenticated -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login.login_view') }}">Iniciar Sesión</a>
+                            <a class="nav-link" href="{{ url_for('login.login_view') }}">Log In</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register.register_view') }}">Regístrate</a>
+                            <a class="nav-link" href="{{ url_for('register.register_view') }}">Sign Up</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -113,7 +111,7 @@
         </div>
     </nav>
 
-    <!-- Contenedor para mostrar mensajes flash -->
+    <!-- Container to display flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -124,12 +122,13 @@
         {% endif %}
     {% endwith %}
 
-    <!-- Contenido dinámico que se insertará desde otras plantillas -->
+    <!-- Dynamic content that will be inserted from other templates -->
     <main class="container mt-5 flex-grow-1">
         {% block content %}
         {% endblock %}
     </main>
 
+<<<<<<< HEAD
     <!-- Pie de página -->
         <footer class="bg-light text-center ">
 
@@ -151,15 +150,37 @@
             </div>
 
         </footer>
+=======
+    <!-- Footer -->
+    <footer class="bg-light text-center ">
 
+        <p class="text-center text-white mt-5 rounded" style="background-color: #007bff">
+            Donate to our wallet
+        </p>
+        <div class="text-center mt-3">
+            <p style="font-size: medium;" >
+                If this template is useful to you, consider supporting us with a donation to continue creating projects like this.
+            </p>
+            <p style="font-size: medium;" class="lead text-dark" style="background-color: #f8f9fa; border-radius: 8px;">
+              Wallet Address USDT (TRC20): <span class="font-weight-bold text-success">TJHmU2QVHs8QTXBnfpk97LH7Mpb2CyZ8cA</span>
+            </p>
+            <p style="font-size: medium;">Thank you for your support! 🙌</p>
+            <p style="font-size: medium;">
+                &copy; {{ current_year }} Base Web Template 1.0. Designed for the community. <br>
+                Open-source and free to facilitate professional web development.
+            </p>
+        </div>
 
-    <!-- Script para hacer desaparecer los mensajes flash después de 5 segundos -->
+    </footer>
+>>>>>>> f159f3042523ac0d81801038b491a0268a052302
+
+    <!-- Script to make flash messages disappear after 5 seconds -->
     <script>
         setTimeout(() => {
             const alerts = document.querySelectorAll('.flash-banner');
             alerts.forEach(alert => {
                 alert.classList.add('fade-out');
-                // Eliminar el elemento después de la transición
+                // Remove the element after transition
                 setTimeout(() => {
                     alert.remove();
                 }, 1000);
@@ -167,10 +188,11 @@
         }, 5000);
     </script>
 
-    <!-- Cargar los scripts de Bootstrap y JavaScript personalizados -->
+    <!-- Load Bootstrap scripts and custom JavaScript -->
     <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/forms.js') }}"></script>
 
 </body>
 </html>
+

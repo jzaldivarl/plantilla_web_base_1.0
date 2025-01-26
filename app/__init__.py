@@ -1,42 +1,42 @@
-# app/__init__.py - Configuración e inicialización de la aplicación Flask
+# app/__init__.py - Configuration and Initialization of the Flask Application
+
 
 """
-Este archivo configura e inicializa todas las extensiones,define la función de fábrica para crear
-la aplicación Flask y registra blueprints, además de manejar sesiones y la inyección
-de datos globales como el año actual.
+This file configures and initializes all extensions, defines the factory function 
+to create the Flask application, and registers blueprints. It also handles sessions 
+and injects global data such as the current year.
 
-Return: app
+Returns: app
 """
 
-# 🧩 1. IMPORTACIÓN DE MÓDULOS NECESARIOS
-from flask import Flask  # 🌐 Flask para la creación de la aplicación web
-from flask_sqlalchemy import SQLAlchemy  # 🗄️ Manejo de base de datos
-from flask_bcrypt import Bcrypt  # 🔐 Hashing seguro de contraseñas
-from flask_login import LoginManager  # 👤 Gestión de sesiones de usuario
-from flask_migrate import Migrate  # 🏗️ Migraciones de la base de datos
-from flask_mail import Mail  # 📧 Envío de correos electrónicos
-from config import Config  # ⚙️ Configuración de la aplicación
-from datetime import datetime  # 🕒 Inyección del año actual en las plantillas
-from flask_wtf.csrf import CSRFProtect  # 🛡️ Protección contra ataques CSRF
+# 🧩 1. IMPORT REQUIRED MODULES
+from flask import Flask  # 🌐 Flask for web application creation
+from flask_sqlalchemy import SQLAlchemy  # 🗄️ Database management
+from flask_bcrypt import Bcrypt  # 🔐 Secure password hashing
+from flask_login import LoginManager  # 👤 User session management
+from flask_migrate import Migrate  # 🏗️ Database migrations
+from flask_mail import Mail  # 📧 Email sending
+from config import Config  # ⚙️ Application configuration
+from datetime import datetime  # 🕒 Injecting the current year into templates
+from flask_wtf.csrf import CSRFProtect  # 🛡️ CSRF attack protection
 
+# 🔧 2. GLOBAL INITIALIZATION OF EXTENSIONS
+db = SQLAlchemy()  # Database initialization
+bcrypt = Bcrypt()  # Password hashing
+login_manager = LoginManager()  # User session management
+mail = Mail()  # Email handling
+migrate = Migrate()  # Migrations for updating the database
+csrf = CSRFProtect()  # CSRF attack protection
 
-# 🔧 2. INICIALIZACIÓN GLOBAL DE EXTENSIONES
-db = SQLAlchemy()  # Inicialización de la base de datos
-bcrypt = Bcrypt()  # Hashing de contraseñas
-login_manager = LoginManager()  # Manejo de sesiones de usuario
-mail = Mail()  # Manejo de correos electrónicos
-migrate = Migrate()  # Migraciones para actualizar la base de datos
-csrf = CSRFProtect()  # Protección contra ataques CSRF
-
-# 🚀 3. FUNCIÓN DE FÁBRICA PARA CREAR LA APLICACIÓN FLASK
+# 🚀 3. FACTORY FUNCTION TO CREATE THE FLASK APPLICATION
 def create_app():
-    """Crea y configura la instancia principal de la aplicación Flask."""
+    """Creates and configures the main Flask application instance."""
     app = Flask(__name__)
 
-    # 3.1 📋 Cargar la configuración desde `config.py`
+    # 3.1 📋 Load configuration from `config.py`
     app.config.from_object(Config)
 
-    # 3.2 🔧 Inicializar las extensiones
+    # 3.2 🔧 Initialize extensions
     db.init_app(app)
     bcrypt.init_app(app)
     login_manager.init_app(app)
@@ -44,13 +44,13 @@ def create_app():
     migrate.init_app(app, db)
     csrf.init_app(app)
 
-    # 3.3 🏷️ Configurar la ruta de inicio de sesión por defecto
+    # 3.3 🏷️ Configure the default login route
     login_manager.login_view = 'login.login_view'
 
-    # 3.4 🧩 Importar y registrar los modelos
+    # 3.4 🧩 Import and register models
     from app.models import User
 
-    # 3.5 🧩 Importar y registrar los blueprints
+    # 3.5 🧩 Import and register blueprints
     from app.routes.auth.loginBP import loginBp
     from app.routes.auth.registerBP import registerBp
     from app.routes.auth.verifyBP import verifyBp
@@ -59,7 +59,7 @@ def create_app():
     from app.routes.homeBP import homeBp
     from app.routes.errorsBP import errorsBp
 
-    # 3.6 📂 Registrar los blueprints en la aplicación
+    # 3.6 📂 Register blueprints in the application
     app.register_blueprint(loginBp)
     app.register_blueprint(registerBp)
     app.register_blueprint(verifyBp)
@@ -68,16 +68,16 @@ def create_app():
     app.register_blueprint(homeBp)
     app.register_blueprint(errorsBp)
 
-    # 3.7 👤 Cargar el usuario actual desde la sesión
+    # 3.7 👤 Load the current user from the session
     @login_manager.user_loader
     def load_user(user_id):
-        """Carga un usuario desde la base de datos por su ID."""
+        """Loads a user from the database by their ID."""
         return User.query.get(int(user_id))
 
-    # 3.8 🗓️ Inyectar el año actual en todas las plantillas
+    # 3.8 🗓️ Inject the current year into all templates
     @app.context_processor
     def inject_year():
-        """Añade el año actual a todas las plantillas."""
+        """Adds the current year to all templates."""
         return {'current_year': datetime.now().year}
 
     return app

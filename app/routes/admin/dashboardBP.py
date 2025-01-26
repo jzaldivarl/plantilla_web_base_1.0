@@ -1,5 +1,6 @@
 # app/routes/admin/dashboardBP.py
 
+<<<<<<< HEAD
 # 📦 IMPORTACIÓN DE MÓDULOS
 from flask import Blueprint, render_template, redirect, url_for, request, flash  # 🌐 Manejo de rutas, redirección y mensajes flash
 from flask_login import login_required, current_user  # 🔐 Manejo de autenticación
@@ -7,174 +8,182 @@ from app.models import User  # 👤 Modelo de usuario
 from app import db  # 🗄️ Base de datos
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError  # ❗ Manejo de errores de la base de datos
 from functools import wraps  # 🧰 Herramienta para crear decoradores personalizados
+=======
+# 📦 MODULE IMPORTS
+from flask import Blueprint, render_template, redirect, url_for, request, flash  # 🌐 Route handling, redirection, and flash messages
+from flask_login import login_required, current_user  # 🔐 Authentication management
+from app.models import User  # 👤 User model
+from app import db  # 🗄️ Database
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError  # ❗ Database error handling
+from functools import wraps  # 🧰 Tool for creating custom decorators
+>>>>>>> f159f3042523ac0d81801038b491a0268a052302
 
-# 🧩 1. DEFINICIÓN DEL BLUEPRINT
-# Este blueprint agrupa todas las rutas relacionadas con la administración.
+# 🧩 1. BLUEPRINT DEFINITION
+# This blueprint groups all routes related to administration.
 dashboardBp = Blueprint('dashboard', __name__, url_prefix='/dashboard')
 
-# 🛡️ 2. DECORADOR `admin_required`
-# Este decorador asegura que solo los administradores puedan acceder a las rutas protegidas.
+# 🛡️ 2. `admin_required` DECORATOR
+# This decorator ensures that only administrators can access protected routes.
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # 🔒 Verifica si el usuario está autenticado y es administrador
+        # 🔒 Verify if the user is authenticated and an admin
         if not current_user.is_authenticated or not current_user.is_admin:
-            flash("No tienes permisos para acceder a esta página.", "danger")  # ⚠️ Mensaje de advertencia
-            return redirect(url_for('home.home'))  # 🔄 Redirección a la página de inicio
+            flash("You do not have permission to access this page.", "danger")  # ⚠️ Warning message
+            return redirect(url_for('home.home'))  # 🔄 Redirect to home page
         return f(*args, **kwargs)
     return decorated_function
 
-# 🖥️ 3. RUTA DEL DASHBOARD DE ADMINISTRACIÓN (`/admin/dashboard`)
+# 🖥️ 3. ADMIN DASHBOARD ROUTE (`/admin/dashboard`)
 @dashboardBp.route('/dashboard')
 @login_required
 @admin_required
 def dashboard():
     """
-    Muestra el panel de administración con un buscador y paginación de usuarios.
+    Displays the admin panel with user search and pagination.
     """
 
-    # 📝 Obtener el término de búsqueda de los parámetros de la URL
+    # 📝 Retrieve the search term from URL parameters
     search_query = request.args.get('search', '')
 
-    # 🔎 Crear la consulta base para buscar usuarios
+    # 🔎 Create the base query to search for users
     users_query = User.query
     if search_query:
-        # 🔍 Filtrar por nombre de usuario o email que coincida con el término de búsqueda
+        # 🔍 Filter by username or email matching the search term
         users_query = users_query.filter(
             (User.username.ilike(f"%{search_query}%")) | (User.email.ilike(f"%{search_query}%"))
         )
 
-    # 📄 Paginación: Mostrar 5 usuarios por página
+    # 📄 Pagination: Display 5 users per page
     page = request.args.get('page', 1, type=int)
     users = users_query.paginate(page=page, per_page=5)
 
-    # 📊 Renderizar el dashboard de administración o con los resultados
+    # 📊 Render the admin dashboard or results
     return render_template('admin/dashboard.html', users=users, search_query=search_query)
 
-# ➕ 4. RUTA PARA AGREGAR UN NUEVO USUARIO (`/admin/add_user`)
+# ➕ 4. ROUTE TO ADD A NEW USER (`/admin/add_user`)
 @dashboardBp.route('/add_user', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def add_user():
     """
-    Permite agregar un nuevo usuario al sistema. Requiere privilegios de administrador.
+    Allows adding a new user to the system. Requires admin privileges.
     """
-    # si el método del formulario es 'POST'
+    # If the form method is 'POST'
     if request.method == 'POST':
         try:
-            # 📥 Obtener los datos del formulario
+            # 📥 Retrieve form data
             username = request.form.get('username').strip()
             email = request.form.get('email').strip()
             password = request.form.get('password').strip()
-            is_admin = 'is_admin' in request.form  # ✅ ¿Es administrador?
-            is_verified = 'is_verified' in request.form  # ✅ ¿Está verificado?
+            is_admin = 'is_admin' in request.form  # ✅ Is admin?
+            is_verified = 'is_verified' in request.form  # ✅ Is verified?
 
-            # 🚨 Validación de campos obligatorios
+            # 🚨 Validate required fields
             if not username or not email or not password:
-                flash('Los campos con asteriscos son obligatorios.', 'danger')
+                flash('Fields with asterisks are required.', 'danger')
                 return redirect(url_for('dashboard.add_user'))
 
-            # 🆕 Crear un nuevo usuario
+            # 🆕 Create a new user
             new_user = User(username=username, email=email, is_admin=is_admin, is_verified=is_verified)
-            new_user.set_password(password)  # 🔐 Establecer la contraseña
+            new_user.set_password(password)  # 🔐 Set the password
 
-            # 🗄️ Guardar el usuario en la base de datos
+            # 🗄️ Save the user to the database
             db.session.add(new_user)
             db.session.commit()
-            flash('Usuario creado exitosamente.', 'success')
+            flash('User successfully created.', 'success')
 
         except IntegrityError as e:
             db.session.rollback()
             if "username" in str(e.orig):
-                flash('El nombre de usuario ya está en uso. Elige otro.', 'danger')
+                flash('The username is already in use. Choose another.', 'danger')
             elif "email" in str(e.orig):
-                flash('El correo electrónico ya está registrado. Usa uno diferente.', 'danger')
+                flash('The email is already registered. Use a different one.', 'danger')
             else:
-                flash('Error de integridad de datos. Intenta nuevamente.', 'danger')
+                flash('Data integrity error. Try again.', 'danger')
             return redirect(url_for('dashboard.add_user'))
 
         except SQLAlchemyError as e:
             db.session.rollback()
-            flash(f'Error: {e} al actualizar el usuario. Intenta nuevamente.', 'danger')
+            flash(f'Error: {e} when updating the user. Try again.', 'danger')
             return redirect(url_for('dashboard.add_user'))
 
         return redirect(url_for('dashboard.dashboard'))
 
     return render_template('admin/add_user.html')
 
-# ✏️ 5. RUTA PARA EDITAR UN USUARIO EXISTENTE (`/admin/edit_user/<user_id>`)
+# ✏️ 5. ROUTE TO EDIT AN EXISTING USER (`/admin/edit_user/<user_id>`)
 @dashboardBp.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def edit_user(user_id):
-
     """
-    Permite editar los datos de un usuario existente.
+    Allows editing the details of an existing user.
     """
-    # 🔍 Busca el usuario o devuelve un 404 si no existe
+    # 🔍 Find the user or return a 404 if not found
     user = User.query.get_or_404(user_id)
 
     if request.method == 'POST':
         try:
-            # 📥 Obtener datos del formulario
+            # 📥 Retrieve form data
             username = request.form.get('username').strip()
             email = request.form.get('email').strip()
             user.is_admin = 'is_admin' in request.form
             user.is_verified = 'is_verified' in request.form
 
-            # 🚨 Validar campos obligatorios
+            # 🚨 Validate required fields
             if not username or not email:
-                flash('Los campos con asteriscos son obligatorios.', 'danger')
+                flash('Fields with asterisks are required.', 'danger')
                 return redirect(url_for('dashboard.edit_user', user_id=user_id))
 
-            # ✏️ Actualizar datos del usuario
+            # ✏️ Update user data
             user.username = username
             user.email = email
             new_password = request.form.get('password')
             if new_password:
                 user.set_password(new_password)
 
-            # 💾 Guardar cambios
+            # 💾 Save changes
             db.session.commit()
-            flash('Usuario actualizado exitosamente.', 'success')
+            flash('User successfully updated.', 'success')
 
         except IntegrityError as e:
             db.session.rollback()
             if "username" in str(e.orig):
-                flash('El nombre de usuario ya está en uso. Elige otro.', 'danger')
+                flash('The username is already in use. Choose another.', 'danger')
             elif "email" in str(e.orig):
-                flash('El correo electrónico ya está registrado. Usa uno diferente.', 'danger')
+                flash('The email is already registered. Use a different one.', 'danger')
             else:
-                flash('Error de integridad de datos. Intenta nuevamente.', 'danger')
+                flash('Data integrity error. Try again.', 'danger')
             return redirect(url_for('dashboard.edit_user', user_id=user_id))
 
         except SQLAlchemyError as e:
             db.session.rollback()
-            flash(f'Error: {e} al actualizar el usuario. Intenta nuevamente.', 'danger')
+            flash(f'Error: {e} when updating the user. Try again.', 'danger')
             return redirect(url_for('dashboard.edit_user', user_id=user_id))
 
         return redirect(url_for('dashboard.dashboard'))
 
     return render_template('admin/edit_user.html', user=user)
 
-# 🗑️ 6. RUTA PARA ELIMINAR UN USUARIO (`/admin/delete_user/<user_id>`)
+# 🗑️ 6. ROUTE TO DELETE A USER (`/admin/delete_user/<user_id>`)
 @dashboardBp.route('/delete_user/<int:user_id>', methods=['POST'])
 @login_required
 @admin_required
 def delete_user(user_id):
     """
-    Elimina un usuario del sistema. Requiere privilegios de administrador.
+    Deletes a user from the system. Requires admin privileges.
     """
     try:
-        # 🔍 Busca el usuario o devuelve un 404 si no existe
+        # 🔍 Find the user or return a 404 if not found
         user = User.query.get_or_404(user_id)
-        db.session.delete(user)  # ❌ Eliminar usuario
+        db.session.delete(user)  # ❌ Delete user
         db.session.commit()
-        flash('Usuario eliminado exitosamente.', 'success')
+        flash('User successfully deleted.', 'success')
 
     except SQLAlchemyError as e:
         db.session.rollback()
-        flash(f'Error: {e} al eliminar el usuario. Intenta nuevamente.', 'danger')
+        flash(f'Error: {e} when deleting the user. Try again.', 'danger')
 
     return redirect(url_for('dashboard.dashboard'))
 
