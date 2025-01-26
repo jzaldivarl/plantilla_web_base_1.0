@@ -1,128 +1,128 @@
 # app/routes/auth/verifyBP.py
 
-# 📦 IMPORTACIÓN DE MÓDULOS
+# 📦 MODULE IMPORTS
 from flask import current_app
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_mail import Message
 from app import mail
 from datetime import datetime, timezone, timedelta
-from app import db  # 📚 Conexión a la base de datos
+from app import db  # 📚 Database connection
 from app.models import User, generate_unique_code
-from app.routes.auth.registerBP import send_verification_email  # 📧 Función para enviar emails de verificación
-from functools import wraps  # 🛠️ Para crear decoradores personalizados
-import random  # 🎲 Para generar códigos de verificación aleatorios
+from app.routes.auth.registerBP import send_verification_email  # 📧 Function to send verification emails
+from functools import wraps  # 🛠️ To create custom decorators
+import random  # 🎲 To generate random verification codes
 
-# 🔧 1. DEFINICIÓN DEL BLUEPRINT
-# El Blueprint agrupa rutas relacionadas con la verificación.
+# 🔧 1. BLUEPRINT DEFINITION
+# The Blueprint groups routes related to verification.
 verifyBp = Blueprint('verify', __name__, url_prefix='/verify')
 
-# ⏰ 2. CONSTANTE DE TIEMPO DE VALIDEZ DEL CÓDIGO
-# El código de verificación será válido por 5 minutos.
+# ⏰ 2. CODE VALIDITY PERIOD CONSTANT
+# The verification code will be valid for 5 minutes.
 CODE_VALIDITY_PERIOD = timedelta(minutes=5)
 
-# 🛡️ 3. DECORADOR `require_verification` (Protección de rutas)
-# 🔒 Este decorador asegura que solo los usuarios en proceso de verificación puedan acceder a ciertas rutas.
+# 🛡️ 3. `require_verification` DECORATOR (Route Protection)
+# 🔒 This decorator ensures that only users in the verification process can access certain routes.
 def require_verification(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        pending_user = session.get('pending_user')  # 🔍 Busca el usuario pendiente en la sesión.
+        pending_user = session.get('pending_user')  # 🔍 Searches for the pending user in the session.
 
-        # 🛑 Si no hay usuario pendiente o el email ya está registrado, se bloquea el acceso.
+        # 🛑 If there is no pending user or the email is already registered, access is blocked.
         if not pending_user or User.query.filter_by(email=pending_user['email']).first():
-            flash('Acceso denegado. Ruta reservada solo para usuarios en proceso de verificación.', 'danger')
+            flash('Access denied. Route reserved for users in the verification process only.', 'danger')
             return redirect(url_for('register.register_view'))
 
-        # ✅ Si el usuario pendiente es válido, ejecuta la función original.
+        # ✅ If the pending user is valid, the original function is executed.
         return f(*args, **kwargs)
     return decorated_function
 
-# 📄 4. RUTA `/verify/` — Página de verificación
-# Muestra un formulario para que el usuario ingrese el código de verificación enviado por email.
+# 📄 4. `/verify/` ROUTE — Verification Page
+# Displays a form for the user to enter the verification code sent by email.
 @verifyBp.route('/', methods=['GET', 'POST'])
-@require_verification  # 🛡️ Protege esta ruta usando el decorador `require_verification`.
+@require_verification  # 🛡️ Protects this route using the `require_verification` decorator.
 def verify_view():
-    if request.method == 'POST':  # 🖊️ Si el usuario envía el formulario...
-        code = request.form.get('code', '').strip()  # 📥 Obtiene el código ingresado.
+    if request.method == 'POST':  # 🖊️ If the user submits the form...
+        code = request.form.get('code', '').strip()  # 📥 Gets the entered code.
 
-        pending_user = session.get('pending_user')  # 🔍 Busca el usuario pendiente en la sesión.
+        pending_user = session.get('pending_user')  # 🔍 Searches for the pending user in the session.
 
-        # 🛑 Si no hay datos del usuario pendiente, redirige al registro.
+        # 🛑 If no pending user data is found, redirects to the registration page.
         if not pending_user:
-            flash('No se encontraron datos de registro. Por favor, regístrate nuevamente.', 'danger')
+            flash('No registration data found. Please register again.', 'danger')
             return redirect(url_for('register.register_view'))
 
-        # ⏳ Verifica si el código ha expirado.
+        # ⏳ Checks if the code has expired.
         if 'timestamp' not in pending_user or datetime.now(timezone.utc) > pending_user['timestamp'] + CODE_VALIDITY_PERIOD:
-            flash('El código de verificación ha expirado. Solicita uno nuevo.', 'danger')
+            flash('The verification code has expired. Please request a new one.', 'danger')
             return redirect(url_for('verify.verify_view'))
 
-        # 🔐 Verifica si el código ingresado coincide con el enviado por email.
+        # 🔐 Verifies if the entered code matches the one sent by email.
         if pending_user['verification_code'] != code:
-            # ⚠️ Incrementa los intentos fallidos.
+            # ⚠️ Increments failed attempts.
             session['failed_attempts'] = session.get('failed_attempts', 0) + 1
 
-            # 🚨 Si hay 3 o más intentos fallidos, limpia la sesión y redirige al registro.
+            # 🚨 If there are 3 or more failed attempts, clears the session and redirects to the registration page.
             if session['failed_attempts'] >= 3:
                 session.clear()
-                flash('Has alcanzado el límite de intentos fallidos. Regístrate nuevamente.', 'danger')
+                flash('You have reached the maximum number of failed attempts. Please register again.', 'danger')
                 return redirect(url_for('register.register_view'))
             else:
-                flash('Código incorrecto. Por favor, intenta nuevamente.', 'danger')
+                flash('Incorrect code. Please try again.', 'danger')
                 return redirect(url_for('verify.verify_view'))
 
-        # 🆕 Si el código es correcto, crea un nuevo usuario en la base de datos.
+        # 🆕 If the code is correct, creates a new user in the database.
         new_user = User(
             username=pending_user['username'],
             email=pending_user['email'],
             password_hash=pending_user['password_hash'],
-            recovery_pin=pending_user['recovery_pin'],  # Asegura que el PIN se guarda
-            is_verified=True  # ✅ Marca al usuario como verificado.
+            recovery_pin=pending_user['recovery_pin'],  # Ensures the PIN is saved
+            is_verified=True  # ✅ Marks the user as verified.
         )
-        db.session.add(new_user)  # 💾 Guarda el usuario en la base de datos.
-        db.session.commit()  # 🔐 Confirma los cambios.
+        db.session.add(new_user)  # 💾 Saves the user in the database.
+        db.session.commit()  # 🔐 Confirms the changes.
 
-        # Enviar el correo con el PIN de recuperación al nuevo usuario
+        # Sends the recovery PIN email to the new user
         send_pin_email(new_user)
 
-        # 🧹 Limpia los datos relacionados con la verificación en la sesión.
+        # 🧹 Cleans up verification-related data from the session.
         session.pop('pending_user', None)
         session.pop('email_to_verify', None)
         session.pop('failed_attempts', None)
 
-        # 🎉 Muestra un mensaje de éxito y redirige al inicio de sesión.
-        flash('Cuenta verificada y registrada exitosamente. Tu PIN de recuperación ha sido enviado a tu correo.\n'
-                                   'Ahora puedes iniciar sesión.', 'success')
+        # 🎉 Displays a success message and redirects to the login page.
+        flash('Account successfully verified and registered. Your recovery PIN has been sent to your email.\n'
+                                   'You can now log in.', 'success')
         return redirect(url_for('login.login_view'))
 
-    # 🖥️ Si el método es GET, muestra la página de verificación.
+    # 🖥️ If the method is GET, displays the verification page.
     return render_template('auth/verify.html')
 
-# 🔄 5. RUTA `/verify/resend_code` — Reenvío del código de verificación
-# Permite al usuario reenviar el código de verificación a su email.
+# 🔄 5. `/verify/resend_code` ROUTE — Resend Verification Code
+# Allows the user to resend the verification code to their email.
 @verifyBp.route('/resend_code', methods=['POST'])
-@require_verification  # 🛡️ Protege esta ruta usando el decorador `require_verification`.
+@require_verification  # 🛡️ Protects this route using the `require_verification` decorator.
 def resend_code():
-    pending_user = session.get('pending_user')  # 🔍 Busca el usuario pendiente en la sesión.
+    pending_user = session.get('pending_user')  # 🔍 Searches for the pending user in the session.
 
-    # 🛑 Si no se encuentra un usuario pendiente, devuelve un mensaje de error.
+    # 🛑 If no pending user is found, returns an error message.
     if not pending_user or 'email' not in pending_user:
-        return jsonify({'message': 'No se encontró la solicitud de verificación. Por favor, regístrate nuevamente.', 'category': 'danger', 'redirect': url_for('register.register_view')})
+        return jsonify({'message': 'Verification request not found. Please register again.', 'category': 'danger', 'redirect': url_for('register.register_view')})
 
-    # 📛 Limita los intentos de reenvío del código.
+    # 📛 Limits the resend attempts.
     attempts = session.get('resend_attempts', 0)
     if attempts >= 2:
-        # 🛑 Si se alcanzó el límite, limpia la sesión y redirige al registro.
+        # 🛑 If the limit is reached, clears the session and redirects to the registration page.
         session.clear()
-        return jsonify({'message': 'Has alcanzado el número máximo de reenvíos. Redirigiendo al registro...', 'category': 'danger', 'redirect': url_for('register.register_view'), 'delay': 3000})
+        return jsonify({'message': 'You have reached the maximum number of resends. Redirecting to registration...', 'category': 'danger', 'redirect': url_for('register.register_view'), 'delay': 3000})
 
-    # 🔄 Incrementa el contador de intentos de reenvío.
+    # 🔄 Increments the resend attempts counter.
     session['resend_attempts'] = attempts + 1
 
-    # 🔐 Mantiene el mismo código si aún es válido.
+    # 🔐 Keeps the same code if it is still valid.
     if 'timestamp' in pending_user and datetime.now(timezone.utc) <= pending_user['timestamp'] + CODE_VALIDITY_PERIOD:
         new_code = pending_user['verification_code']
     else:
-        # 🎲 Genera un nuevo código si el anterior ha expirado.
+        # 🎲 Generates a new code if the previous one has expired.
         #new_code = str(random.randint(100000, 999999))
         new_code = generate_unique_code(User, 'verification_code', length=6)
         pending_user['verification_code'] = new_code
@@ -130,39 +130,39 @@ def resend_code():
         session['pending_user'] = pending_user
 
     try:
-        # 📧 Envía el código de verificación por email.
+        # 📧 Sends the verification code by email.
         send_verification_email(pending_user['email'], new_code)
-        return jsonify({'message': 'El código de verificación ha sido reenviado. Revisa tu correo electrónico.', 'category': 'info'}), 200
+        return jsonify({'message': 'The verification code has been resent. Please check your email.', 'category': 'info'}), 200
 
     except Exception as e:
-        # ❌ Si ocurre un error, devuelve un mensaje de error.
-        return jsonify({'message': f'Error al enviar el correo: {str(e)}', 'category': 'danger'}), 500
+        # ❌ If an error occurs, returns an error message.
+        return jsonify({'message': f'Error sending email: {str(e)}', 'category': 'danger'}), 500
 
 
 def send_pin_email(user):
     """
-    Envía un correo electrónico al usuario con el PIN de recuperación.
+    Sends an email to the user with the recovery PIN.
     """
     msg = Message(
-        subject="Bienvenido a la Aplicación - Código PIN de Recuperación",
+        subject="Welcome to the Application - Recovery PIN Code",
         sender=current_app.config['MAIL_DEFAULT_SENDER'],
         recipients=[user.email]
     )
     msg.body = f"""
-    Hola {user.username},
+    Hello {user.username},
 
-    Gracias por registrarte en nuestra aplicación.
+    Thank you for registering in our application.
 
-    Aquí tienes tu código PIN de recuperación:
+    Here is your recovery PIN code:
     {user.recovery_pin}
 
-    Es importante que guardes este código en un lugar seguro.
-    Lo necesitarás si alguna vez olvidas tu contraseña.
+    It is important to store this code in a safe place.
+    You will need it if you ever forget your password.
 
-    ¡Bienvenido y esperamos que disfrutes de nuestra plataforma!
+    Welcome, and we hope you enjoy our platform!
 
-    Saludos,
-    El equipo de soporte
+    Regards,
+    The support team
     """
     mail.send(msg)
 

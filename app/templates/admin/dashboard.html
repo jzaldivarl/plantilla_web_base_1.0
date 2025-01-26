@@ -3,25 +3,25 @@
 {% extends "base.html" %}
 
 {% block title %}
-Dashboard de Administración
+Admin Dashboard
 {% endblock %}
 
 {% block content %}
-<h5 class="mt-5">Dashboard de Administración</h5>
+<h5 class="mt-5">Admin Dashboard</h5>
 
 <div class="container mt-5">
 
-    <!-- Formulario de búsqueda -->
+    <!-- Search form -->
     <form id="search-form" method="GET" action="{{ url_for('dashboard.dashboard') }}" class="mb-3">
         <div class="input-group">
-            <input type="text" id="search-input" class="form-control" placeholder="Buscar por nombre o correo..." name="search" value="{{ search_query }}">
-            <button class="btn btn-primary" type="submit">Buscar</button>
+            <input type="text" id="search-input" class="form-control" placeholder="Search by username or email..." name="search" value="{{ search_query }}">
+            <button class="btn btn-primary" type="submit">Search</button>
         </div>
     </form>
 
-    <!-- Tabla de usuarios -->
+    <!-- Users table -->
     <table class="table table-striped table-bordered">
-        <thead class="small" >
+        <thead class="small">
             <tr>
                 <th>ID</th>
                 <th>USER</th>
@@ -41,21 +41,21 @@ Dashboard de Administración
                 <td>{{ user.username }}</td>
                 <td>{{ user.email }}</td>
                 <!--<td>{{ user.password_hash }}</td>-->
-                <td>{{ 'Sí' if user.is_admin else 'No' }}</td>
-                <!--<td>{{ user.verification_code}}</td>-->
-                <td>{{ 'Sí' if user.is_verified else 'No' }}</td>
-                <td>{{ user.recovery_pin}}</td>
+                <td>{{ 'Yes' if user.is_admin else 'No' }}</td>
+                <!--<td>{{ user.verification_code }}</td>-->
+                <td>{{ 'Yes' if user.is_verified else 'No' }}</td>
+                <td>{{ user.recovery_pin }}</td>
                 <td>
                     <a href="{{ url_for('dashboard.edit_user', user_id=user.id) }}"
                         class="btn btn-warning btn-sm mb-1 mt-1">
-                        Editar
+                        Edit
                     </a>
                     <form action="{{ url_for('dashboard.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit"
                             class="btn btn-danger btn-sm"
-                            onclick="return confirm('¿seguro que deseas eliminar este usuario?');">
-                            Eliminar
+                            onclick="return confirm('Are you sure you want to delete this user?');">
+                            Delete
                         </button>
                     </form>
                 </td>
@@ -64,7 +64,7 @@ Dashboard de Administración
         </tbody>
     </table>
 
-    <!-- Paginación -->
+    <!-- Pagination -->
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
             {% if users.has_prev %}
@@ -72,7 +72,7 @@ Dashboard de Administración
                 <a class="page-link"
                     style="font-size: 14px;"
                     href="{{ url_for('dashboard.dashboard', page=users.prev_num, search=search_query) }}">
-                    anterior
+                    previous
                 </a>
             </li>
             {% endif %}
@@ -90,7 +90,7 @@ Dashboard de Administración
                 <a class="page-link"
                     style="font-size: 14px;"
                     href="{{ url_for('dashboard.dashboard', page=users.next_num, search=search_query) }}">
-                    siguiente
+                    next
                 </a>
             </li>
             {% endif %}
@@ -100,11 +100,11 @@ Dashboard de Administración
     <a class="btn btn-primary mt-3"
         style="font-size: 14px;"
         href="{{ url_for('dashboard.add_user') }}">
-        nuevo usuario
+        new user
     </a>
 </div>
 
-<!-- Script para búsqueda en tiempo real -->
+<!-- Script for real-time search -->
 <script>
     document.getElementById('search-input').addEventListener('input', function() {
         const searchQuery = this.value;
@@ -122,3 +122,4 @@ Dashboard de Administración
 </script>
 
 {% endblock %}
+

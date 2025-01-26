@@ -1,8 +1,7 @@
 # app/routes/auth/registerBP.py
 
-# 📋 Archivo que define las rutas relacionadas con el registro de usuarios.
+# 📋 File defining the routes related to user registration.
 
-import random
 from flask import current_app
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_mail import Message
@@ -11,55 +10,54 @@ from validate_email_address import validate_email
 from app.models import User, generate_unique_code
 from datetime import datetime, timezone
 
-
-# 🔷 1. Definición del Blueprint para manejar las rutas del registro de usuarios.
-# El prefijo `/register` se agrega automáticamente a todas las rutas definidas en este blueprint.
+# 🔷 1. Blueprint definition for handling user registration routes.
+# The prefix `/register` is automatically added to all routes defined in this blueprint.
 registerBp = Blueprint('register', __name__, url_prefix='/auth/register')
 
-# 🔷 2. Ruta principal para la página de registro.
-# Esta función maneja tanto solicitudes GET como POST.
+# 🔷 2. Main route for the registration page.
+# This function handles both GET and POST requests.
 @registerBp.route('/', methods=['GET', 'POST'])
 def register_view():
 
-    # 📩 Cuando se envía el formulario (método POST).
+    # 📩 When the form is submitted (POST method).
     if request.method == 'POST':
-        # 🔹 Obtener los datos del formulario.
+        # 🔹 Retrieve form data.
         username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
 
-        # 1️⃣ Validar que los campos requeridos no estén vacíos.
+        # 1️⃣ Validate that the required fields are not empty.
         if not username or not email or not password:
-            flash('Los campos con asteriscos son obligatorios.', 'danger')
+            flash('Fields marked with an asterisk are required.', 'danger')
             return redirect(url_for('register.register_view'))
 
-        # 2️⃣ Verificar si el nombre de usuario o el correo ya están registrados.
+        # 2️⃣ Check if the username or email are already registered.
         existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
         if existing_user:
             if existing_user.username == username:
-                flash('El nombre de usuario ya está registrado. Por favor, elige otro.', 'danger')
+                flash('The username is already registered. Please choose another.', 'danger')
             if existing_user.email == email:
-                flash('El correo electrónico ya está registrado. Por favor, inicia sesión o elige otro.', 'danger')
+                flash('The email is already registered. Please log in or choose another.', 'danger')
             return redirect(url_for('register.register_view'))
 
-        # 3️⃣ Validar formato del email usando la librería `validate_email`.
+        # 3️⃣ Validate the email format using the `validate_email` library.
         if not validate_email(email):
-            flash('Por favor, ingresa un correo electrónico válido.', 'danger')
+            flash('Please enter a valid email address.', 'danger')
             return redirect(url_for('register.register_view'))
 
-        # 4️⃣ Validar la seguridad de la contraseña.
+        # 4️⃣ Validate password security.
         if not validate_password(password):
-            flash('La contraseña debe tener al menos 8 caracteres, una letra mayúscula, un número y un carácter especial.', 'danger')
+            flash('The password must have at least 8 characters, one uppercase letter, one number, and one special character.', 'danger')
             return redirect(url_for('register.register_view'))
 
-        # 5️⃣ Generar un código de verificación de 6 dígitos aleatorio.
+        # 5️⃣ Generate a random 6-digit verification code.
         verification_code = generate_unique_code(User, 'verification_code', length=6)
         recovery_pin = generate_unique_code(User, 'recovery_pin', length=6)
 
-        # 🕒 Establecer el timestamp actual en UTC para registro y seguimiento.
+        # 🕒 Set the current UTC timestamp for logging and tracking.
         timestamp = datetime.now(timezone.utc)
 
-        # 6️⃣ Almacenar los datos del usuario en la sesión de forma temporal.
+        # 6️⃣ Temporarily store user data in the session.
         session['pending_user'] = {
             'username': username,
             'email': email,
@@ -69,58 +67,58 @@ def register_view():
             'timestamp': timestamp
         }
 
-        # 🔹 Guardar el email en la sesión para usarlo en la verificación.
+        # 🔹 Save the email in the session for use during verification.
         session['email_to_verify'] = email
 
-        # 7️⃣ Intentar enviar el correo de verificación.
+        # 7️⃣ Attempt to send the verification email.
         try:
             send_verification_email(email, verification_code)
-            flash('Registro iniciado. Revisa tu correo para verificar tu cuenta.', 'success')
+            flash('Registration initiated. Check your email to verify your account.', 'success')
             return redirect(url_for('verify.verify_view'))
         except Exception as e:
-            # ❗ Capturar errores al enviar el correo.
-            flash(f'Error al enviar el correo de verificación: {str(e)} \n verifique su configuración de correo y su conexión de internet', 'danger')
+            # ❗ Catch errors when sending the email.
+            flash(f'Error sending the verification email: {str(e)} \nCheck your email settings and internet connection.', 'danger')
             return redirect(url_for('register.register_view'))
 
-    # 🖥️ Si es una solicitud GET, renderizar la página de registro.
+    # 🖥️ For a GET request, render the registration page.
     return render_template('auth/register.html')
 
-# 🔷 3. Función para enviar el correo de verificación al usuario.
+# 🔷 3. Function to send a verification email to the user.
 def send_verification_email(email, code):
     """
-    Envía un correo electrónico con el código de verificación al usuario.
+    Sends an email containing the verification code to the user.
     """
-    # 🕒 Establecer el timestamp actual en UTC.
+    # 🕒 Set the current UTC timestamp.
     timestamp = datetime.now(timezone.utc)
 
-    # 🔹 Guardar el código y el timestamp en la sesión.
+    # 🔹 Save the code and timestamp in the session.
     pending_user = session.get('pending_user', {})
     pending_user['verification_code'] = code
     pending_user['timestamp'] = timestamp
     session['pending_user'] = pending_user
 
-    # ✉️ Configurar el mensaje de correo.
+    # ✉️ Configure the email message.
     msg = Message(
-        subject='Verifica tu cuenta',
-        sender=current_app.config['MAIL_DEFAULT_SENDER'],  # Usa la configuración centralizada.
+        subject='Verify your account',
+        sender=current_app.config['MAIL_DEFAULT_SENDER'],  # Uses centralized configuration.
         recipients=[email]
     )
-    # 🔹 Cuerpo del mensaje con el código de verificación.
+    # 🔹 Message body with the verification code.
     msg.html = render_template('auth/verification_email.html', code=code)
 
-    # 📤 Enviar el correo.
+    # 📤 Send the email.
     mail.send(msg)
 
-# 🔷 4. Función para validar la seguridad de la contraseña.
+# 🔷 4. Function to validate password security.
 def validate_password(password):
     """
-    Valida que la contraseña cumpla con los siguientes requisitos:
-    - Al menos 8 caracteres.
-    - Al menos una letra mayúscula.
-    - Al menos un número.
-    - Al menos un carácter especial (como @, $, !, %, *, ? o &).
+    Validates that the password meets the following requirements:
+    - At least 8 characters.
+    - At least one uppercase letter.
+    - At least one number.
+    - At least one special character (e.g., @, $, !, %, *, ?, or &).
     """
-    import re  # 📐 Usar expresiones regulares para verificar los requisitos.
+    import re  # 📐 Use regular expressions to check the requirements.
     pattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
     return re.match(pattern, password)
 
