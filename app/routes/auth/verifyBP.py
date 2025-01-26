@@ -10,7 +10,6 @@ from app import db  # 📚 Conexión a la base de datos
 from app.models import User, generate_unique_code
 from app.routes.auth.registerBP import send_verification_email  # 📧 Función para enviar emails de verificación
 from functools import wraps  # 🛠️ Para crear decoradores personalizados
-import random  # 🎲 Para generar códigos de verificación aleatorios
 
 # 🔧 1. DEFINICIÓN DEL BLUEPRINT
 # El Blueprint agrupa rutas relacionadas con la verificación.

@@ -5,8 +5,6 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash 
 from flask_login import login_required, current_user  # 🔐 Manejo de autenticación
 from app.models import User  # 👤 Modelo de usuario
 from app import db  # 🗄️ Base de datos
-from validate_email_address import validate_email  # 📧 Validación de correos electrónicos
-from app.routes.auth.registerBP import validate_password  # 🔒 Validación de contraseñas
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError  # ❗ Manejo de errores de la base de datos
 from functools import wraps  # 🧰 Herramienta para crear decoradores personalizados
 
