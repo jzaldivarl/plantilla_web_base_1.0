@@ -1,21 +1,22 @@
 # app/routes/homeBP.py #
 
-# Importamos los módulos necesarios desde Flask
-from flask import Blueprint, render_template  # Blueprint para modularizar rutas, render_template para cargar templates
+# Import necessary modules from Flask
+from flask import Blueprint, render_template  # Blueprint to modularize routes, render_template to load templates
 
-# Importamos login_required de Flask-Login para proteger rutas (aunque no se usa actualmente en este archivo)
-from flask_login import login_required  # Requiere autenticación para acceder a ciertas vistas
+# Import login_required from Flask-Login to protect routes (although not used in this file)
+from flask_login import login_required  # Requires authentication to access certain views
 
-# Definimos un blueprint para las rutas del home
+# Define a blueprint for home routes
 homeBp = Blueprint('home', __name__, url_prefix='/home')
 
-# Ruta principal del blueprint
+# Main route for the blueprint
 @homeBp.route('/')
-# @login_required  # Este decorador se puede usar si solo quieres permitir acceso a usuarios autenticados
+# @login_required  # This decorator can be used if you want to restrict access to authenticated users only
 def home():
     """
-    Renderiza la página principal del sitio web (home).
+    Renders the main page of the website (home).
     """
-    return render_template('home.html')  # Carga y devuelve el archivo 'home.html'
+    return render_template('home.html')  # Loads and returns the 'home.html' file
+
 
 

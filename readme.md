@@ -1,141 +1,112 @@
-# Plantilla Web Base 1.0
+Web Base Template 1.0
 
-## Descripción
+Description
 
-**Plantilla Web Base 1.0** es una aplicación diseñada para servir como punto de partida sólido para el desarrollo de aplicaciones web robustas. Su estructura modular y bien organizada permite a los desarrolladores concentrarse en la implementación de funcionalidades específicas, como e-commerce, blogs o sistemas de reservas, sin preocuparse por configuraciones iniciales tediosas o repetitivas.
+Web Base Template 1.0 is an application designed to serve as a solid starting point for developing robust web applications. Its modular and well-organized structure allows developers to focus on implementing specific features like e-commerce, blogs, or booking systems without worrying about tedious or repetitive initial setups.
 
-Esta plantilla incluye:
+This template includes:
 
-- Autenticación segura.
-- Sistema de gestión de usuarios con roles.
-- Arquitectura escalable.
-- Integración de base de datos con PostgreSQL.
-- Soporte para AJAX y diseños responsivos.
+    Secure authentication.
+    User management system with roles.
+    Scalable architecture.
+    Database integration with PostgreSQL.
+    Support for AJAX and responsive designs.
 
-## Tecnologías Utilizadas
+Technologies Used
 
-- **Python** (Flask): Framework backend.
-- **PostgreSQL**: Base de datos.
-- **HTML5**, **CSS3**, **JavaScript**: Tecnologías front-end.
-- **Bootstrap** (local): Estilos responsivos.
-- **AJAX**: Mejora de la experiencia de usuario con interacciones asíncronas.
-- **Jinja2**: Motor de plantillas.
-- **Werkzeug**: Gestión de contraseñas seguras.
-- **Flask-Login**, **Flask-WTF**, **Flask-Mail**: Extensiones para autenticación y formularios.
+    Python (Flask): Backend framework.
+    PostgreSQL: Database.
+    HTML5, CSS3, JavaScript: Front-end technologies.
+    Bootstrap (local): Responsive styling.
+    AJAX: Enhancing user experience with asynchronous interactions.
+    Jinja2: Template engine.
+    Werkzeug: Secure password management.
+    Flask-Login, Flask-WTF, Flask-Mail: Extensions for authentication and forms.
 
-## Características Principales
+Key Features
 
-1. **Sistema de Autenticación**:
+    Authentication System:
+        User registration.
+        Login.
+        Password recovery with retry limits.
 
-   - Registro de usuarios.
-   - Inicio de sesión.
-   - Recuperación de contraseñas con límites de reenvío.
+    User Management:
+        CRUD for administrators.
+        Roles and permissions.
 
-2. **Gestión de Usuarios**:
+    Note: The user addition and editing forms are not strictly validated as the registration form. This is to provide administrators with more flexibility, requiring caution to avoid creating temporary or unverified accounts, which could be a vulnerability for the application.
 
-   - CRUD para administradores.
-   - Roles y permisos.
+    Admin Dashboard:
+        Pagination and search.
 
-   nota: Los formularios de adición y edición de usuarios no estan validados obligatoriamente
-         como es el caso del formulario de registro. esto es para que el administrador tenga más
-         flexibilidad de manera general, lo cual requiere mas atención y cuidado de no crear cuentas
-         temporales, o no verificadas que puedan ser una vulnerabilidad para la aplicación.
+    Modular Architecture:
+        Clear division of routes and blueprints.
 
-3. **Panel de Administración**:
+    Professional Database:
+        Scalable and secure design with PostgreSQL.
 
-   - Paginación y buscador.
+Installation and Setup
+Prerequisites
 
-4. **Arquitectura Modular**:
+    Python 3.9 or higher.
+    PostgreSQL.
+    Configured virtual environment.
 
-   - División clara de rutas y blueprints.
+Installation Steps
 
-5. **Base de Datos Profesional**:
+    Clone the repository:
 
-   - Diseño escalable y seguro con PostgreSQL.
+git clone <REPOSITORY_URL>
+cd web-base-template-1.0
 
-## Instalación y Configuración
+Set up the virtual environment:
 
-### Requisitos Previos
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-- Python 3.9 o superior.
-- PostgreSQL.
-- Entorno virtual configurado.
+Install dependencies:
 
-### Pasos de Instalación
+pip install -r requirements.txt
 
-1. **Clonar el repositorio**:
+Set up environment variables:
+Create a .env file in the root directory with the following variables:
 
-   ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd plantilla-web-base-1.0
-   ```
+FLASK_APP=run.py
+FLASK_ENV=development
+SECRET_KEY=<your_secret_key>
+SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://<username>:<password>@<host>/<db_name>
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=True
+MAIL_USERNAME=<email>
+MAIL_PASSWORD=<password>
 
-2. **Configurar el entorno virtual**:
+Initialize the database:
 
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # En Windows: venv\Scripts\activate
-   ```
+flask db upgrade
 
-3. **Instalar dependencias**:
+Run the application:
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+    python run.py
 
-4. **Configurar variables de entorno**:
-   Crear un archivo `.env` en la raíz del proyecto con las siguientes variables:
+The application will be available at http://127.0.0.1:5000.
+General Project Structure
 
-   ```env
-   FLASK_APP=run.py
-   FLASK_ENV=development
-   SECRET_KEY=<clave_secreta>
-   SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://<usuario>:<contraseña>@<host>/<nombre_db>
-   MAIL_SERVER=smtp.gmail.com
-   MAIL_PORT=587
-   MAIL_USE_TLS=True
-   MAIL_USERNAME=<correo>
-   MAIL_PASSWORD=<contraseña>
-   ```
-
-5. **Inicializar la base de datos**:
-
-   ```bash
-   flask db upgrade
-   ```
-
-6. **Ejecutar la aplicación**:
-
-   ```
-   bash
-   python3 run.py
-   ```
-
-   ```
-   cmd
-   python run.py
-   ```
-
-La aplicación estará disponible en [http://127.0.0.1:5000](http://127.0.0.1:5000).
-
-## Estructura del General del Proyecto
-
-```
-plantilla-web-base-1.0/
+web-base-template-1.0/
 ├── app
-│   ├── __init__.py
-│   ├── models.py
-│   ├── routes
-│   ├── static
-│   └── templates
+│   ├── __init__.py
+│   ├── models.py
+│   ├── routes
+│   ├── static
+│   └── templates
 ├── config.py
 ├── migrations
-│   ├── alembic.ini
-│   ├── env.py
-│   ├── README
-│   ├── script.py.mako
-│   └── versions
-├── readme.md
+│   ├── alembic.ini
+│   ├── env.py
+│   ├── README
+│   ├── script.py.mako
+│   └── versions
+├── README.md
 ├── requirements.txt
 ├── run.py
 └── utils
@@ -146,25 +117,19 @@ plantilla-web-base-1.0/
     ├── postgres_query.py
     ├── pruebas.py
     └── random_password_generator.py
-```
 
-## Contribución
+Contribution
 
-Se aceptan contribuciones mediante pull requests. Por favor, asegúrate de que tu código siga las mejores prácticas y pase las pruebas antes de enviarlo.
+Contributions are welcome via pull requests. Please ensure your code follows best practices and passes all tests before submitting.
+License
 
-## Licencia
+This project is licensed under the MIT License.
 
-Este proyecto está licenciado bajo la [MIT License](LICENSE).
+Note: Although this project works 100%, it is recommended to review and test the code before using it in production. Its primary purpose is to professionally facilitate the work of beginner developers starting with Flask.
+Donations
 
-**Nota**: Aunque este proyecto funciona al 100%, se recomienda revisar y probar el código antes de usarlo en producción. Su propósito principal es facilitar el trabajo de desarrolladores principiantes de forma profesional que comienzan a usar Flask.
+If you’d like to support this project, consider making a cryptocurrency donation.
 
+    USDT (TRC20): [TJHmU2QVHs8QTXBnfpk97LH7Mpb2CyZ8cA]
 
-## Donaciones
-
-Si deseas apoyar este proyecto, considera realizar una donación en criptomonedas.
-
-- **USDT (TRC20)**: *[TJHmU2QVHs8QTXBnfpk97LH7Mpb2CyZ8cA]*
-
-¡Gracias por tu apoyo! 🙌
-
-
+Thank you for your support! 🙌

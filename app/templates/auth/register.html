@@ -2,14 +2,14 @@
 
 {% extends 'base.html' %}
 
-{% block title %}Regístrate{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
 <style>
-    /* ✅ Estilos específicos para el formulario de registro */
+    /* ✅ Specific styles for the registration form */
     .register-form .invalid-feedback {
         display: none;
-        color: #dc3545;  /* Color de error */
+        color: #dc3545;  /* Error color */
         font-size: 0.9em;
     }
 
@@ -18,77 +18,78 @@
     }
 
     .register-form input:invalid {
-        border-color: #dc3545;  /* Bordes rojos si el campo es inválido */
+        border-color: #dc3545;  /* Red borders if the field is invalid */
     }
 
     .register-form input:valid {
-        border-color: #28a745;  /* Bordes verdes si el campo es válido */
+        border-color: #28a745;  /* Green borders if the field is valid */
     }
 </style>
 
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card shadow-sm p-4" style="width: 100%; max-width: 350px;">
-        <h4 class="text-center">Regístrate</h4>
+        <h4 class="text-center">Register</h4>
 
-        <!-- ✅ Formulario de Registro -->
+        <!-- ✅ Registration Form -->
         <form id="registerForm" method="POST" class="register-form" novalidate action="{{ url_for('register.register_view') }}">
-            <!-- ✅ Token CSRF para seguridad -->
+            <!-- ✅ CSRF Token for security -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-            <!-- ✅ Campo de nombre de usuario -->
+            <!-- ✅ Username field -->
             <div class="mb-1">
-                <label for="username">*usuario</label>
+                <label for="username">*Username</label>
                 <input type="text" class="form-control" id="username" name="username" minlength="5" required>
-                <small class="text-muted">El nombre de usuario debe tener al menos 5 caracteres.</small>
+                <small class="text-muted">Username must be at least 5 characters long.</small>
             </div>
 
-            <!-- ✅ Campo de correo electrónico -->
+            <!-- ✅ Email field -->
             <div class="mb-1">
-                <label for="email">*e-mail</label>
+                <label for="email">*Email</label>
                 <input type="email" class="form-control" id="email" name="email" required>
-                <small class="text-muted">El e-mail debe tener un formato válido, ejemplo: "usuario123@gmail.com".</small>
+                <small class="text-muted">Email must be in a valid format, e.g., "user123@gmail.com".</small>
             </div>
 
-            <!-- ✅ Campo de contraseña -->
+            <!-- ✅ Password field -->
             <div class="mb-1">
-                <label for="password">*contraseña</label>
+                <label for="password">*Password</label>
                 <input type="password" class="form-control" id="password" name="password"
                        minlength="8" pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$" required>
                 <small class="text-muted">
-                    La contraseña debe tener al menos 8 caracteres, incluyendo una letra mayúscula,
-                    un número y un carácter especial.
+                    Password must be at least 8 characters long, including one uppercase letter,
+                    one number, and one special character.
                 </small>
             </div>
 
-            <!-- ✅ Botón de registro -->
+            <!-- ✅ Register button -->
             <button type="submit"
                     id="registerButton"
                     class="btn btn-primary mt-4"
                     style="font-size: 14px">
-                Registrarse
+                Register
             </button>
         </form>
     </div>
 </div>
 
-<!-- ✅ Lógica JavaScript -->
+<!-- ✅ JavaScript logic -->
 <script>
-    // ✅ Selección del formulario y botón de registro
+    // ✅ Select the form and register button
     const registerForm = document.getElementById('registerForm');
     const registerButton = document.getElementById('registerButton');
 
-    // ✅ Cuando el formulario se envía, desactiva el botón y muestra el spinner
+    // ✅ When the form is submitted, disable the button and show the spinner
     registerForm.addEventListener('submit', function (e) {
-        e.preventDefault();  // Evita el envío inmediato
+        e.preventDefault();  // Prevent immediate submission
 
-        // ✅ Desactiva el botón y muestra el spinner de carga
+        // ✅ Disable the button and show the loading spinner
         registerButton.disabled = true;
-        registerButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registrando...';
+        registerButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Registering...';
 
-        // ✅ Envía el formulario después de un pequeño retraso
+        // ✅ Submit the form after a slight delay
         setTimeout(() => {
             registerForm.submit();
         }, 500);
     });
 </script>
 {% endblock %}
+

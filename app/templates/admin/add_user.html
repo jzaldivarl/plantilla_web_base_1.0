@@ -1,65 +1,65 @@
 <!-- app/templates/admin/add_user.html -->
 
 {% extends 'base.html' %}
-<!-- Hereda de la plantilla base.html para mantener un diseño consistente -->
+<!-- Inherits from the base.html template to maintain a consistent design -->
 
-{% block title %}Crear Usuario{% endblock %}
-<!-- Define el título de la página -->
+{% block title %}Create User{% endblock %}
+<!-- Defines the page title -->
 
 {% block content %}
 <div class="container mt-5 d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card shadow-sm p-4" style="width: 100%; max-width: 350px;">
-        <!-- Contenedor centrado para el formulario de creación de usuario -->
+        <!-- Centered container for the user creation form -->
 
-        <h4 class="text-center mb-4 ">Nuevo Usuario</h4>
+        <h4 class="text-center mb-4">New User</h4>
 
-        <!-- Formulario para adicionar usuarios -->
+        <!-- Form to add users -->
         <form method="POST" class="needs-validation" novalidate>
-            <!-- ✅ Campo oculto para el token CSRF para evitar ataques de falsificación de solicitudes -->
+            <!-- ✅ Hidden field for CSRF token to prevent request forgery attacks -->
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-            <!-- Campo para el nombre de usuario -->
+            <!-- Field for the username -->
             <div class="mb-1">
-                <label for="username" class="form-label">*usuario</label>
+                <label for="username" class="form-label">*Username</label>
                 <input type="text" class="form-control" id="username" name="username" required>
-                <small class="text-muted">El nombre de usuario debe tener al menos 5 caracteres (Opcional para Administradores).</small>
-                <div class="invalid-feedback">Por favor, ingresa un nombre de usuario.</div>
+                <small class="text-muted">The username must be at least 5 characters long (Optional for Administrators).</small>
+                <div class="invalid-feedback">Please enter a username.</div>
             </div>
 
-            <!-- Campo para el correo electrónico -->
+            <!-- Field for the email -->
             <div class="mb-1">
-                <label for="email" class="form-label">*correo electrónico</label>
+                <label for="email" class="form-label">*Email</label>
                 <input type="email" class="form-control" id="email" name="email" required>
-                <small class="text-muted">El e-mail debe tener un formato válido ejemplo: usuario123@gmail.com. (Opcional para Administradores).</small>
-                <div class="invalid-feedback">Por favor, ingresa un correo válido.</div>
+                <small class="text-muted">The email must have a valid format, e.g., user123@gmail.com (Optional for Administrators).</small>
+                <div class="invalid-feedback">Please enter a valid email.</div>
             </div>
 
-            <!-- Campo para la contraseña -->
+            <!-- Field for the password -->
             <div class="mb-3">
-                <label for="password" class="form-label">*contraseña</label>
+                <label for="password" class="form-label">*Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
-                <small class="text-muted">Debe tener al menos 8 caracteres, incluyendo mayúsculas, números y símbolos (Opcional para Administradores).</small>
-                <div class="invalid-feedback">Por favor, ingresa una contraseña.</div>
+                <small class="text-muted">It must be at least 8 characters long, including uppercase, numbers, and symbols (Optional for Administrators).</small>
+                <div class="invalid-feedback">Please enter a password.</div>
             </div>
 
-            <!-- Checkbox para definir si el usuario será administrador -->
+            <!-- Checkbox to define if the user will be an administrator -->
             <div class="form-check mb-1">
                 <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin">
-                <label class="form-check-label" for="is_admin">¿administrador?</label>
+                <label class="form-check-label" for="is_admin">Administrator?</label>
             </div>
 
-            <!-- Checkbox para definir si el usuario está verificado -->
+            <!-- Checkbox to define if the user is verified -->
             <div class="form-check mb-1">
                 <input type="hidden" name="is_verified" value="off">
                 <input type="checkbox" class="form-check-input" id="is_verified" name="is_verified">
-                <label class="form-check-label" for="is_verified">¿verificado?</label>
-                <small class="text-muted">verificado automático la primera vez</small>
+                <label class="form-check-label" for="is_verified">Verified?</label>
+                <small class="text-muted">Automatically verified the first time</small>
             </div>
 
-            <!-- Botones para enviar el formulario o volver al dashboard -->
+            <!-- Buttons to submit the form or return to the dashboard -->
             <div class="mt-5 d-flex justify-content-center">
-                <button type="submit" class="btn btn-primary" style="font-size: 14px">Crear usuario</button>
-                <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary ms-3" style="font-size: 14px">Volver al Dashboard</a>
+                <button type="submit" class="btn btn-primary" style="font-size: 14px">Create User</button>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-secondary ms-3" style="font-size: 14px">Back to Dashboard</a>
             </div>
         </form>
     </div>

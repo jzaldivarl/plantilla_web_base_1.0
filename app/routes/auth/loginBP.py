@@ -1,73 +1,73 @@
 # app/routes/auth/loginBP.py
 
 
-# 📦 IMPORTACIÓN DE MÓDULOS
-from flask import Blueprint, render_template, request, redirect, url_for, flash  # 🌐 Módulos para rutas y manejo de mensajes flash
-from flask_login import login_user, logout_user, login_required  # 🔐 Manejo de sesiones de usuario
-from app.models import User  # 👤 Modelo de usuario para consultas en la base de datos
+# 📦 MODULE IMPORTS
+from flask import Blueprint, render_template, request, redirect, url_for, flash  # 🌐 Modules for routing and flash messages
+from flask_login import login_user, logout_user, login_required  # 🔐 Session management for users
+from app.models import User  # 👤 User model for database queries
 
-# 🧩 1. CREAR EL BLUEPRINT
-# 🔖 El blueprint agrupa las rutas relacionadas con el inicio de sesión y el cierre de sesión.
+# 🧩 1. CREATE THE BLUEPRINT
+# 🔖 The blueprint groups routes related to login and logout functionality.
 loginBp = Blueprint('login', __name__, url_prefix='/auth/login')
 
-# 🔑 2. RUTA DE INICIO DE SESIÓN (`/auth/login`)
-# Esta ruta permite a los usuarios iniciar sesión en la aplicación.
+# 🔑 2. LOGIN ROUTE (`/auth/login`)
+# This route allows users to log in to the application.
 @loginBp.route('/', methods=['GET', 'POST'])
 def login_view():
 
-    # 🖊️ Si el usuario envía el formulario (método POST) ...
+    # 🖊️ If the user submits the form (POST method)...
     if request.method == 'POST':
-        # 📥 Obtener los datos del formulario
-        email = request.form.get('email').strip()  # ✉️ Email ingresado por el usuario
-        password = request.form.get('password').strip()  # 🔒 Contraseña ingresada por el usuario
+        # 📥 Retrieve form data
+        email = request.form.get('email').strip()  # ✉️ Email entered by the user
+        password = request.form.get('password').strip()  # 🔒 Password entered by the user
 
-        # 🚨 2. Validación básica de formato de correo (en backend)
+        # 🚨 2. Basic email format validation (backend)
         if not email or '@' not in email:
-            flash('Correo inválido. Por favor, ingresa un correo válido.', 'danger')
+            flash('Invalid email. Please enter a valid email address.', 'danger')
             return redirect(url_for('login.login_view'))
 
-        # 🔎 3. BUSCAR USUARIO EN LA BASE DE DATOS
-        # Filtra el usuario por el email ingresado.
+        # 🔎 3. SEARCH FOR USER IN THE DATABASE
+        # Filter the user by the entered email.
         user = User.query.filter_by(email=email).first()
 
-        # ✅ 4. VERIFICACIÓN DE CREDENCIALES
-        # Si el usuario existe y la contraseña es correcta...
+        # ✅ 4. CREDENTIAL VERIFICATION
+        # If the user exists and the password is correct...
         if user and user.check_password(password):
-            # 🚫 5. BLOQUEAR ACCESO SI NO ESTÁ VERIFICADO (excepto si es admin)
+            # 🚫 5. BLOCK ACCESS IF NOT VERIFIED (except for admin users)
             if not user.is_admin and not user.is_verified:
-                flash('Tu cuenta no está verificada. Por favor, verifica tu email.', 'warning')
-                return redirect(url_for('login.login_view'))  # 🔄 Redirige al formulario de inicio de sesión
+                flash('Your account is not verified. Please verify your email.', 'warning')
+                return redirect(url_for('login.login_view'))  # 🔄 Redirect to the login form
 
-            # 🔓 6. INICIAR SESIÓN
-            # Si todo está correcto, iniciar sesión con Flask-Login.
+            # 🔓 6. LOG IN
+            # If everything is correct, log in with Flask-Login.
             login_user(user)
-            flash('Inicio de sesión exitoso.', 'success')  # 🎉 Mensaje de éxito
+            flash('Login successful.', 'success')  # 🎉 Success message
 
-            # 🔀 7. REDIRIGIR SEGÚN EL TIPO DE USUARIO
-            # Si es administrador, redirige al panel de administración.
+            # 🔀 7. REDIRECT BASED ON USER TYPE
+            # If the user is an admin, redirect to the admin dashboard.
             if user.is_admin:
                 return redirect(url_for('dashboard.dashboard'))
             else:
-                # Si es un usuario normal, redirige a la página de inicio.
+                # If the user is a regular user, redirect to the homepage.
                 return redirect(url_for('home.home'))
 
         else:
-            # ⚠️ 8. CREDENCIALES INCORRECTAS
-            # Si las credenciales no son correctas, muestra un mensaje de error.
-            flash('Credenciales incorrectas. Por favor, intenta nuevamente.', 'danger')
+            # ⚠️ 8. INCORRECT CREDENTIALS
+            # If the credentials are incorrect, display an error message.
+            flash('Invalid credentials. Please try again.', 'danger')
 
-    # 🖥️ Renderiza el formulario de inicio de sesión (método GET).
+    # 🖥️ Render the login form (GET method).
     return render_template('auth/login.html')
 
-# 🚪 9. RUTA PARA CERRAR SESIÓN (`/login/logout`)
-# Esta ruta permite a los usuarios cerrar sesión.
+# 🚪 9. LOGOUT ROUTE (`/login/logout`)
+# This route allows users to log out.
 @loginBp.route('/logout')
-@login_required  # 🔒 Requiere que el usuario esté autenticado.
+@login_required  # 🔒 Requires the user to be authenticated.
 def logout():
-    # 🚪 10. CERRAR SESIÓN
-    # Cierra la sesión del usuario actual.
+    # 🚪 10. LOG OUT
+    # Logs out the current user.
     logout_user()
-    flash('Has cerrado sesión correctamente.', 'info')  # 💬 Mensaje de información
-    # 🔄 Redirige al formulario de inicio de sesión.
+    flash('You have successfully logged out.', 'info')  # 💬 Information message
+    # 🔄 Redirect to the login form.
     return redirect(url_for('login.login_view'))
 
