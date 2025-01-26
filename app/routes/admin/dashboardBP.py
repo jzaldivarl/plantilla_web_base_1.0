@@ -1,6 +1,5 @@
 # app/routes/admin/dashboardBP.py
 
-<<<<<<< HEAD
 # 📦 IMPORTACIÓN DE MÓDULOS
 from flask import Blueprint, render_template, redirect, url_for, request, flash  # 🌐 Manejo de rutas, redirección y mensajes flash
 from flask_login import login_required, current_user  # 🔐 Manejo de autenticación
@@ -8,15 +7,6 @@ from app.models import User  # 👤 Modelo de usuario
 from app import db  # 🗄️ Base de datos
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError  # ❗ Manejo de errores de la base de datos
 from functools import wraps  # 🧰 Herramienta para crear decoradores personalizados
-=======
-# 📦 MODULE IMPORTS
-from flask import Blueprint, render_template, redirect, url_for, request, flash  # 🌐 Route handling, redirection, and flash messages
-from flask_login import login_required, current_user  # 🔐 Authentication management
-from app.models import User  # 👤 User model
-from app import db  # 🗄️ Database
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError  # ❗ Database error handling
-from functools import wraps  # 🧰 Tool for creating custom decorators
->>>>>>> f159f3042523ac0d81801038b491a0268a052302
 
 # 🧩 1. BLUEPRINT DEFINITION
 # This blueprint groups all routes related to administration.
